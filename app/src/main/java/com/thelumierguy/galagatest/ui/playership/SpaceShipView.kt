@@ -5,12 +5,12 @@ import android.graphics.*
 import android.graphics.drawable.PictureDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.view.View
+import com.thelumierguy.galagatest.ui.base.BaseCustomView
 import kotlin.math.roundToInt
 
 
 class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
-    View(context, attributeSet) {
+    BaseCustomView(context, attributeSet) {
 
     private var currentShipPosition: Float = 0F
     private val bodyPaint = Paint().apply {

@@ -8,40 +8,30 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Log
 import android.util.Range
-import android.view.View
-import com.thelumierguy.galagatest.utils.CustomLifeCycleOwner
+import com.thelumierguy.galagatest.ui.base.BaseCustomView
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
 import kotlin.random.Random
 
 
 class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
-    View(context, attributeSet) {
-
-    private val lifeCycleOwner by lazy { CustomLifeCycleOwner() }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        lifeCycleOwner.startListening()
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        lifeCycleOwner.stopListening()
-    }
+    BaseCustomView(context, attributeSet) {
 
     var onCollisionDetector: OnCollisionDetector? = null
 
 
     private val enemyList = mutableListOf(
-        mutableMapOf<EnemyLocationRange, List<Enemy?>>()
+        EnemyColumn()
     )
 
+    private val bulletPositionList: MutableList<Pair<UUID, MutableStateFlow<Pair<Float, Float>>>> =
+        mutableListOf()
 
-    private val bulletPositionList: MutableMap<MutableMap<EnemyLocationRange, List<Enemy?>>, MutableStateFlow<Pair<Float, Float>>> =
-        mutableMapOf()
-
+    private var bulletWatcherJob: Job = Job()
 
     private fun initEnemies() {
         enemyList.clear()
@@ -54,10 +44,9 @@ class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
             val range = enemiesList.getRangeX()
 
             enemyList.add(
-                mutableMapOf(
-                    EnemyLocationRange(
-                        range.first, range.second
-                    ) to enemiesList
+                EnemyColumn(
+                    EnemyLocationRange(range.first, range.second),
+                    enemiesList
                 )
             )
         }
@@ -70,72 +59,54 @@ class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
 
 
     override fun onDraw(canvas: Canvas?) {
-        enemyList.flatMap {
-            it.values.flatten()
-        }.forEach {
-            it?.onDraw(canvas)
+        enemyList.flattenedForEach {
+            it.onDraw(canvas)
         }
     }
 
-    fun checkCollision(bulletPosition: MutableStateFlow<Pair<Float, Float>>) {
-        lifeCycleOwner.customViewLifeCycleScope.launch {
-            val bulletRange =
-                enemyList
-                    .flatMap {
-                        it.keys.toList()
-                    }.find {
-                        it.isBetween(bulletPosition.value.first)
-                    }
+    fun checkCollision(bulletId: UUID, bulletPositionState: MutableStateFlow<Pair<Float, Float>>) {
+        bulletPositionList.add(Pair(bulletId, bulletPositionState))
+        bulletWatcherJob.cancelChildren()
+        bulletWatcherJob = lifeCycleOwner.customViewLifeCycleScope.launch {
 
+            bulletPositionList.forEach { bulletData ->
 
-            val enemySet = enemyList.find {
-                it.containsKey(bulletRange)
-            }
-            enemySet?.values
-            val enemyInLine = enemySet?.values?.reversed()
+                launch {
 
-            enemyInLine?.let {
-                bulletPositionList[enemySet] = bulletPosition
-                startObservingBulletPosition()
-            }
-        }
-    }
+                    bulletData.second.collect { bulletPosition ->
 
-    private fun startObservingBulletPosition() {
-        bulletPositionList.forEach { bulletPositionMap ->
-            lifeCycleOwner.customViewLifeCycleScope.launch {
-                bulletPositionMap.value.collect { bulletPosition ->
-                    Log.d("Bullet before", " $bulletPosition")
-                    val key = bulletPositionMap.key.keys
-                    val enemyInList = enemyList.find { it.keys == key }?.values
+                        Log.d("Bullet before", " $bulletPosition")
+                        enemyList.checkXForEach(bulletPosition.first) {
+                            val enemyInLine = it.enemyList.reversed().find {
+                                it.checkEnemyYPosition(bulletPosition.second)
+                            }
 
-                    if (!enemyInList.isNullOrEmpty()) {
-                        val enemyInLine = enemyInList.flatten().reversed().find {
-                            it?.checkEnemyYPosition(bulletPosition.second) ?: false
+                            enemyInLine?.let {
+                                Log.d("Bullet", "${it.enemyX} ${it.enemyY} $bulletPosition")
+                                destroyBullet(bulletData)
+                                destroyEnemy(it)
+                            }
                         }
 
-                        enemyInLine?.let {
-                            Log.d("Bullet", "${it.enemyX} ${it.enemyY} $bulletPosition")
-                            destroyBullet(bulletPositionMap.value)
-                            destroyEnemy(it)
-                        }
                     }
                 }
             }
+
         }
     }
 
-    private fun destroyBullet(bulletPositionMap: MutableStateFlow<Pair<Float, Float>>) {
-        bulletPositionList.onEachIndexed { index, entry ->
-            if (bulletPositionMap == entry.value) {
+    private fun destroyBullet(bulletData: Pair<UUID, MutableStateFlow<Pair<Float, Float>>>) {
+        bulletPositionList.onEachIndexed { index, flow ->
+            if (bulletData.first == flow.first) {
                 onCollisionDetector?.onCollision(index)
                 return@onEachIndexed
             }
         }
+        removeBullet(bulletData.first)
     }
 
     private fun destroyEnemy(enemyInLine: Enemy) {
-        enemyList.flatMap { it.values }.flatten().forEach {
+        enemyList.flattenedForEach {
             if (it == enemyInLine) {
                 it.isVisible = false
             }
@@ -143,11 +114,11 @@ class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
         postInvalidate()
     }
 
-    fun removeBullet(bullet: MutableStateFlow<Pair<Float, Float>>) {
+    fun removeBullet(bullet: UUID) {
         val iterator = bulletPositionList.iterator()
-        if (iterator.hasNext()) {
+        while (iterator.hasNext()) {
             val enemy = iterator.next()
-            if (enemy == bullet) {
+            if (enemy.first == bullet) {
                 iterator.remove()
             }
         }
@@ -198,10 +169,6 @@ class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
                 canvas?.drawCircle(enemyX, enemyY, radius, paint)
         }
 
-        fun isInRange(bulletX: Float): Boolean {
-            return Range(enemyX - radius, enemyX + radius).contains(bulletX)
-        }
-
         fun checkEnemyYPosition(bulletY: Float): Boolean {
             return Range(enemyY - radius, enemyY + radius).contains(bulletY) && isVisible
         }
@@ -220,12 +187,3 @@ class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
 interface OnCollisionDetector {
     fun onCollision(index: Int)
 }
-
-typealias EnemyLocationRange = Range<Float>
-
-fun EnemyLocationRange.isBetween(value: Float): Boolean {
-    return contains(value)
-}
-
-
-data class EnemyColumn(val range: EnemyLocationRange, val enemyList: MutableList<EnemiesView.Enemy>)

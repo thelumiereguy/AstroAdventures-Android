@@ -5,24 +5,12 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.view.View
-import com.thelumierguy.galagatest.utils.CustomLifeCycleOwner
+import com.thelumierguy.galagatest.ui.base.BaseCustomView
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.util.*
 
 class BulletView(context: Context, attributeSet: AttributeSet? = null) :
-    View(context, attributeSet) {
-
-    private val lifeCycleOwner by lazy { CustomLifeCycleOwner() }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        lifeCycleOwner.startListening()
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        lifeCycleOwner.stopListening()
-    }
+    BaseCustomView(context, attributeSet) {
 
     var bulletTracker: BulletTracker? = null
 
@@ -87,6 +75,8 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
 
     inner class Bullet(private val bulletX: Float) {
 
+        val id = UUID.randomUUID()
+
         private var bulletY = shipY
 
         fun getBulletY() = bulletY
@@ -95,7 +85,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
             MutableStateFlow(Pair(bulletX, bulletY))
 
         init {
-            bulletTracker?.initBulletTracking(bulletPosition)
+            bulletTracker?.initBulletTracking(id,bulletPosition)
         }
 
 
@@ -115,7 +105,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
             bulletY -= 10
             bulletPosition.value = Pair(bulletX, bulletY)
             if (bulletY < 0) {
-                bulletTracker?.cancelTracking(bulletPosition)
+                bulletTracker?.cancelTracking(id)
             }
         }
     }
@@ -123,6 +113,6 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
 }
 
 interface BulletTracker {
-    fun initBulletTracking(bulletPosition: MutableStateFlow<Pair<Float, Float>>)
-    fun cancelTracking(bulletPosition: MutableStateFlow<Pair<Float, Float>>)
+    fun initBulletTracking(bulletId: UUID, bulletPosition: MutableStateFlow<Pair<Float, Float>>)
+    fun cancelTracking(bulletId: UUID)
 }
