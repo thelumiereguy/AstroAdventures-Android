@@ -1,4 +1,4 @@
-package com.thelumierguy.galagatest.ui
+package com.thelumierguy.galagatest.ui.bullets
 
 import android.content.Context
 import android.graphics.Canvas
@@ -7,10 +7,8 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import com.thelumierguy.galagatest.utils.CustomLifeCycleOwner
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 
-@ExperimentalCoroutinesApi
 class BulletView(context: Context, attributeSet: AttributeSet? = null) :
     View(context, attributeSet) {
 
@@ -54,7 +52,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
 
     override fun onDraw(canvas: Canvas?) {
         canvas?.let {
-            bulletStateList.forEach {
+            bulletStateList.iterator().forEach {
                 it.fire(canvas)
                 it.updatePosition()
             }
@@ -69,16 +67,29 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
         val iterator = iterator()
         while (iterator.hasNext()) {
             val bullet = iterator.next()
-            if (bullet.bulletY < 0) {
+            if (bullet.getBulletY() < 0) {
                 iterator.remove()
+                invalidate()
             }
         }
     }
 
+    fun destroyBullet(index: Int) {
+        post {
+            if (index < bulletStateList.size) {
+                val bulletState = bulletStateList[index]
+                bulletStateList.removeAll { it == bulletState }
+            }
+            invalidate()
+        }
+    }
 
-    inner class Bullet(val bulletX: Float) {
 
-        var bulletY = shipY
+    inner class Bullet(private val bulletX: Float) {
+
+        private var bulletY = shipY
+
+        fun getBulletY() = bulletY
 
         private var bulletPosition =
             MutableStateFlow(Pair(bulletX, bulletY))
@@ -102,7 +113,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
 
         fun updatePosition() {
             bulletY -= 10
-            bulletPosition.value = Pair(shipX, shipY)
+            bulletPosition.value = Pair(bulletX, bulletY)
             if (bulletY < 0) {
                 bulletTracker?.cancelTracking(bulletPosition)
             }

@@ -1,4 +1,4 @@
-package com.thelumierguy.galagatest.ui
+package com.thelumierguy.galagatest.ui.playership
 
 import android.content.Context
 import android.graphics.*
