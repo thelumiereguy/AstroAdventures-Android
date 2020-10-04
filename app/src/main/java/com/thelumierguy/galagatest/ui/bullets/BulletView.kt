@@ -21,6 +21,10 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
         isDither = false
     }
 
+    init {
+        setLayerType(LAYER_TYPE_HARDWARE, null)
+    }
+
     private var bulletStateList = mutableListOf<Bullet>()
 
 
@@ -87,6 +91,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
         init {
             bulletTracker?.initBulletTracking(id,bulletPosition)
         }
+
 
 
         fun fire(canvas: Canvas) {

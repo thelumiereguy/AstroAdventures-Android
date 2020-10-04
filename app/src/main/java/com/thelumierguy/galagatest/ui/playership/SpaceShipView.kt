@@ -3,9 +3,11 @@ package com.thelumierguy.galagatest.ui.playership
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.PictureDrawable
+import android.hardware.SensorEvent
 import android.util.AttributeSet
-import android.view.MotionEvent
+import android.util.Log
 import com.thelumierguy.galagatest.ui.base.BaseCustomView
+import com.thelumierguy.galagatest.utils.lowPass
 import kotlin.math.roundToInt
 
 
@@ -52,8 +54,13 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
 
     private lateinit var spaceShipPicture: Picture
     private lateinit var pictureDrawable: PictureDrawable
+    private var gravityValue = FloatArray(1)
 
     private var displayRect = Rect()
+
+    init {
+        setLayerType(LAYER_TYPE_HARDWARE, null)
+    }
 
     private fun initPicture() {
         spaceShipPicture = Picture()
@@ -222,30 +229,50 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
     }
 
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        return when (event?.action) {
-            MotionEvent.ACTION_DOWN -> {
-                true
-            }
-            MotionEvent.ACTION_MOVE -> {
-                if (event.x > wingWidth && event.x < measuredWidth - wingWidth) {
-                    currentShipPosition = event.x
-                    displayRect.set(
-                        (event.x - halfWidth).roundToInt(),
-                        0,
-                        (event.x + halfWidth).roundToInt(),
-                        measuredHeight
-                    )
-                    invalidate()
-                }
-                true
-            }
-            else -> {
-                super.onTouchEvent(event)
-            }
+//    override fun onTouchEvent(event: MotionEvent?): Boolean {
+//        return when (event?.action) {
+//            MotionEvent.ACTION_DOWN -> {
+//                true
+//            }
+//            MotionEvent.ACTION_MOVE -> {
+//
+//                true
+//            }
+//            else -> {
+//                super.onTouchEvent(event)
+//            }
+//        }
+//    }
+
+    fun getShipY(): Float = bodyTopPoint
+
+    fun processSensorEvents(sensorEvent: SensorEvent) {
+        lowPass(sensorEvent.values, gravityValue)
+        magnifyValue()
+//        invertGravityValue()
+        processValues()
+    }
+
+    private fun processValues() {
+        Log.d("Ship","$rotationValue")
+        if (rotationValue > wingWidth && rotationValue < measuredWidth - wingWidth) {
+            currentShipPosition = rotationValue
+            displayRect.set(
+                (rotationValue - halfWidth).roundToInt(),
+                0,
+                (rotationValue + halfWidth).roundToInt(),
+                measuredHeight
+            )
+            invalidate()
         }
     }
 
-    fun getShipY(): Float = bodyTopPoint
+    private var rotationValue = 0F
+
+    private val multiplicationFactor = -50F
+
+    private fun magnifyValue() {
+        rotationValue = multiplicationFactor * gravityValue[0]
+    }
 
 }
