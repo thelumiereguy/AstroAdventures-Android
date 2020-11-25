@@ -86,7 +86,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
         fun getBulletY() = bulletY
 
         private var bulletPosition =
-            MutableStateFlow(Pair(bulletX, bulletY))
+            MutableStateFlow(BulletCoordinates(bulletX, bulletY))
 
         init {
             bulletTracker?.initBulletTracking(id,bulletPosition)
@@ -108,7 +108,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
 
         fun updatePosition() {
             bulletY -= 10
-            bulletPosition.value = Pair(bulletX, bulletY)
+            bulletPosition.value = BulletCoordinates(bulletX, bulletY)
             if (bulletY < 0) {
                 bulletTracker?.cancelTracking(id)
             }
@@ -118,6 +118,6 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
 }
 
 interface BulletTracker {
-    fun initBulletTracking(bulletId: UUID, bulletPosition: MutableStateFlow<Pair<Float, Float>>)
+    fun initBulletTracking(bulletId: UUID, bulletPosition: MutableStateFlow<BulletCoordinates>)
     fun cancelTracking(bulletId: UUID)
 }

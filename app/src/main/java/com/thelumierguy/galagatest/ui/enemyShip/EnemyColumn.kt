@@ -1,9 +1,11 @@
 package com.thelumierguy.galagatest.ui.enemyShip
 
+import com.thelumierguy.galagatest.ui.enemyShip.enemy.Enemy
+
 
 data class EnemyColumn(
     val range: EnemyLocationRange = EnemyLocationRange(0F, 0F),
-    val enemyList: List<EnemiesView.Enemy> = listOf(),
+    val enemyList: List<Enemy> = listOf(),
 ) {
 
     fun areAnyVisible(): Boolean {
@@ -14,15 +16,15 @@ data class EnemyColumn(
 inline fun List<EnemyColumn>.checkXForEach(x: Float, transform: (EnemyColumn) -> Unit) {
     val iterator = iterator()
     while (iterator.hasNext()) {
-        val enemy = iterator.next()
-        if (enemy.range.contains(x) && enemy.areAnyVisible()) {
-            transform(enemy)
+        val enemyColumn = iterator.next()
+        if (enemyColumn.range.contains(x) && enemyColumn.areAnyVisible()) {
+            transform(enemyColumn)
             return
         }
     }
 }
 
-inline fun MutableList<EnemyColumn>.flattenedForEach(transform: (EnemiesView.Enemy) -> Unit) {
+inline fun MutableList<EnemyColumn>.flattenedForEach(transform: (Enemy) -> Unit) {
     flatMap { it.enemyList }.forEach {
         transform(it)
     }

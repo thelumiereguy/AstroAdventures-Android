@@ -2,29 +2,25 @@ package com.thelumierguy.galagatest.ui.enemyShip
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
 import android.os.CountDownTimer
 import android.util.AttributeSet
 import android.util.Log
-import android.util.Range
 import com.thelumierguy.galagatest.ui.base.BaseCustomView
-import com.thelumierguy.galagatest.ui.enemyShip.enemyDelegates.MitsuZeroView
+import com.thelumierguy.galagatest.ui.bullets.BulletCoordinates
+import com.thelumierguy.galagatest.ui.enemyShip.enemy.Enemy
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.random.Random
 
 
 class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
     BaseCustomView(context, attributeSet) {
 
     companion object {
-        var columnSize = 6
+        var columnSize = 4
 
         var rowSize = 4
     }
@@ -39,7 +35,7 @@ class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
 
     private var timer: CountDownTimer? = null
 
-    private val bulletPositionList: MutableList<Pair<UUID, MutableStateFlow<Pair<Float, Float>>>> =
+    private val bulletPositionList: MutableList<Pair<UUID, MutableStateFlow<BulletCoordinates>>> =
         mutableListOf()
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -113,7 +109,7 @@ class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
         }
     }
 
-    fun checkCollision(bulletId: UUID, bulletPositionState: MutableStateFlow<Pair<Float, Float>>) {
+    fun checkCollision(bulletId: UUID, bulletPositionState: MutableStateFlow<BulletCoordinates>) {
         bulletPositionList.add(Pair(bulletId, bulletPositionState))
         bulletWatcherJob.cancelChildren()
         bulletWatcherJob = lifeCycleOwner.customViewLifeCycleScope.launch {
@@ -124,10 +120,9 @@ class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
 
                     bulletData.second.collect { bulletPosition ->
 
-                        Log.d("Bullet before", " $bulletPosition")
-                        enemyList.checkXForEach(bulletPosition.first) {
+                        enemyList.checkXForEach(bulletPosition.x) {
                             val enemyInLine = it.enemyList.reversed().find {
-                                it.checkEnemyYPosition(bulletPosition.second)
+                                it.checkEnemyYPosition(bulletPosition.y)
                             }
 
                             enemyInLine?.let { enemy ->
@@ -144,7 +139,7 @@ class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
         }
     }
 
-    private fun destroyBullet(bulletData: Pair<UUID, MutableStateFlow<Pair<Float, Float>>>) {
+    private fun destroyBullet(bulletData: Pair<UUID, MutableStateFlow<BulletCoordinates>>) {
         bulletPositionList.onEachIndexed { index, flow ->
             if (bulletData.first == flow.first) {
                 onCollisionDetector?.onCollision(index)
@@ -173,78 +168,9 @@ class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
         }
     }
 
-    class Enemy(val radius: Float) : GetAirShipData {
-
-        val drawRect = RectF(
-            0F, 0F, 0F, 0F
-        )
-
-        var enemyLife = Random.nextInt(1, 5)
-        var enemyY = 0F
-        var enemyX = 0F
-
-        val enemyAirShip by lazy {
-            MitsuZeroView(this)
-        }
-
-
-        private val paint by lazy {
-            Paint().apply {
-                color = Color.rgb(
-                    Random.nextInt(128, 255),
-                    Random.nextInt(128, 255),
-                    Random.nextInt(128, 255)
-                )
-                isAntiAlias = false
-                isDither = false
-            }
-        }
-
-        fun onHit() {
-            enemyLife--
-            paint.alpha = 42 * enemyLife
-            isVisible = enemyLife > 0
-        }
-
-
-        companion object {
-            fun builder(width: Int, positionX: Int, positionY: Int): Enemy {
-                return Enemy(width / 20F).apply {
-                    drawRect.set(
-                        (width / rowSize.toFloat()) * positionX,
-                        (width / columnSize.toFloat()) * positionY,
-                        (width / rowSize.toFloat()) * (positionX + 1),
-                        (width / columnSize.toFloat()) * (positionY + 1),
-                    )
-                    enemyX = drawRect.centerX()
-                    enemyY = drawRect.centerY()
-//                    enemyAirShip.init()
-                }
-            }
-        }
-
-        var isVisible: Boolean = true
-
-
-        fun onDraw(canvas: Canvas?) {
-            if (isVisible) {
-                canvas?.drawCircle(enemyX, enemyY, radius, paint)
-            }
-        }
-
-        fun checkEnemyYPosition(bulletY: Float): Boolean {
-            return Range(enemyY - radius, enemyY + radius).contains(bulletY) && isVisible
-        }
-
-        override fun getAirshipDrawRect(): RectF = drawRect
-
-        override fun getX(): Float = enemyX
-
-        override fun getY(): Float = enemyY
-    }
 }
 
-fun List<EnemiesView.Enemy>.getRangeX(): Pair<Float, Float> {
+fun List<Enemy>.getRangeX(): Pair<Float, Float> {
     return if (size > 0) {
         val enemy = get(0)
         Pair(enemy.enemyX - enemy.radius, enemy.enemyX + enemy.radius)

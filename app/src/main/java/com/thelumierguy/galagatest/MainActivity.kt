@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.thelumierguy.galagatest.ui.bullets.BulletCoordinates
 import com.thelumierguy.galagatest.ui.bullets.BulletTracker
 import com.thelumierguy.galagatest.ui.bullets.BulletView
 import com.thelumierguy.galagatest.ui.enemyShip.EnemiesView
@@ -61,7 +62,7 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector {
 
     override fun initBulletTracking(
         bulletId: UUID,
-        bulletPosition: MutableStateFlow<Pair<Float, Float>>,
+        bulletPosition: MutableStateFlow<BulletCoordinates>,
     ) {
         enemiesView.checkCollision(bulletId, bulletPosition)
     }
