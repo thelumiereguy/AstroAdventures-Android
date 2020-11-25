@@ -42,6 +42,7 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         isAntiAlias = false
         strokeWidth = 8F
         isDither = false
+        setShadowLayer(10F, 0F, 10F, Color.MAGENTA)
     }
 
     private var streamLinedTopPoint = 0f
@@ -229,32 +230,16 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
     }
 
 
-//    override fun onTouchEvent(event: MotionEvent?): Boolean {
-//        return when (event?.action) {
-//            MotionEvent.ACTION_DOWN -> {
-//                true
-//            }
-//            MotionEvent.ACTION_MOVE -> {
-//
-//                true
-//            }
-//            else -> {
-//                super.onTouchEvent(event)
-//            }
-//        }
-//    }
-
     fun getShipY(): Float = bodyTopPoint
 
     fun processSensorEvents(sensorEvent: SensorEvent) {
         lowPass(sensorEvent.values, gravityValue)
         magnifyValue()
-//        invertGravityValue()
         processValues()
     }
 
     private fun processValues() {
-        Log.d("Ship","$rotationValue")
+        Log.d("Ship", "$rotationValue")
         if (rotationValue > wingWidth && rotationValue < measuredWidth - wingWidth) {
             currentShipPosition = rotationValue
             displayRect.set(
