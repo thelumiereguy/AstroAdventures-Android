@@ -1,12 +1,11 @@
-package com.thelumierguy.galagatest.ui.playership
+package com.thelumierguy.galagatest.ui.views.playership
 
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.PictureDrawable
 import android.hardware.SensorEvent
 import android.util.AttributeSet
-import android.util.Log
-import com.thelumierguy.galagatest.ui.base.BaseCustomView
+import com.thelumierguy.galagatest.ui.views.base.BaseCustomView
 import com.thelumierguy.galagatest.utils.lowPass
 import kotlin.math.roundToInt
 
@@ -52,10 +51,15 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
     private var halfHeight = 0F
     private var missileSize = 0F
 
-
     private lateinit var spaceShipPicture: Picture
+
     private lateinit var pictureDrawable: PictureDrawable
+
     private var gravityValue = FloatArray(1)
+
+    private var translationXValue = 0F
+
+    private val multiplicationFactor = -50F
 
     private var displayRect = Rect()
 
@@ -116,8 +120,8 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         )
     }
 
-    fun getShipX() = currentShipPosition
 
+    fun getShipX() = currentShipPosition
 
     private fun drawBody(it: Canvas) {
         bodyPaintStroke.strokeWidth = 24F
@@ -145,6 +149,7 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         startX = (halfWidth + wingWidth / 2)
         canvas.drawMissile(startX, startY)
     }
+
 
     private fun drawExhaust(canvas: Canvas) {
         val path = Path()
@@ -191,7 +196,6 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         canvas.drawPath(path, jetPaint)
     }
 
-
     private fun Canvas.drawMissile(startX: Float, startY: Float) {
         drawLine(
             startX,
@@ -201,6 +205,7 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
             jetPaint
         )
     }
+
 
     private fun drawShipWings(canvas: Canvas) {
         val path = Path()
@@ -229,7 +234,6 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
 
     }
 
-
     fun getShipY(): Float = bodyTopPoint
 
     fun processSensorEvents(sensorEvent: SensorEvent) {
@@ -239,25 +243,21 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
     }
 
     private fun processValues() {
-        Log.d("Ship", "$rotationValue")
-        if (rotationValue > wingWidth && rotationValue < measuredWidth - wingWidth) {
-            currentShipPosition = rotationValue
+//        Log.d("Ship", "$rotationValue")
+        if (translationXValue > wingWidth && translationXValue < measuredWidth - wingWidth) {
+            currentShipPosition = translationXValue
             displayRect.set(
-                (rotationValue - halfWidth).roundToInt(),
+                (translationXValue - halfWidth).roundToInt(),
                 0,
-                (rotationValue + halfWidth).roundToInt(),
+                (translationXValue + halfWidth).roundToInt(),
                 measuredHeight
             )
             invalidate()
         }
     }
 
-    private var rotationValue = 0F
-
-    private val multiplicationFactor = -50F
-
     private fun magnifyValue() {
-        rotationValue = multiplicationFactor * gravityValue[0]
+        translationXValue = multiplicationFactor * gravityValue[0]
     }
 
 }

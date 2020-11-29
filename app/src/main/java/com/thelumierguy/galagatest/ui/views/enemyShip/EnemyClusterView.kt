@@ -1,28 +1,29 @@
-package com.thelumierguy.galagatest.ui.enemyShip
+package com.thelumierguy.galagatest.ui.views.enemyShip
 
 import android.content.Context
 import android.graphics.Canvas
 import android.os.CountDownTimer
 import android.util.AttributeSet
 import android.util.Log
-import com.thelumierguy.galagatest.ui.base.BaseCustomView
-import com.thelumierguy.galagatest.ui.bullets.BulletCoordinates
-import com.thelumierguy.galagatest.ui.enemyShip.enemy.Enemy
+import com.thelumierguy.galagatest.ui.views.base.BaseCustomView
+import com.thelumierguy.galagatest.ui.views.bullets.BulletCoordinates
+import com.thelumierguy.galagatest.utils.GlobalCounter.timerFlow
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 
 
-class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
+class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
     BaseCustomView(context, attributeSet) {
 
     companion object {
-        var columnSize = 4
+        var columnSize = 6
 
         var rowSize = 4
+
+        var speed = 3F
     }
 
     var onCollisionDetector: OnCollisionDetector? = null
@@ -68,32 +69,29 @@ class EnemiesView(context: Context, attributeSet: AttributeSet? = null) :
         startTranslating()
     }
 
+    /**
+     * Counter for translating the enemies
+     */
     private fun startTranslating() {
-        timer = object : CountDownTimer(50000, 50) {
-            override fun onTick(millisUntilFinished: Long) {
-                enemyList.checkIfYReached(measuredHeight) { hasReachedMax ->
-                    if (hasReachedMax) {
-                        resetEnemies()
-                    }
-                    if (enemyList.isNotEmpty()) {
-                        translateEnemy()
-                        invalidate()
-                    }
+        timerFlow.onEach {
+            Log.d("ping", it.toString())
+            enemyList.checkIfYReached(measuredHeight) { hasReachedMax ->
+                if (hasReachedMax) {
+                    resetEnemies()
+                }
+                if (enemyList.isNotEmpty()) {
+                    translateEnemy(System.currentTimeMillis())
+                    invalidate()
                 }
             }
+        }.launchIn(lifeCycleOwner.customViewLifeCycleScope)
 
-            private fun translateEnemy() {
-                enemyList.flattenedForEach { enemy ->
-                    enemy.enemyY = enemy.enemyY + 2F
-                    enemy.drawRect.offset(0F, 2F)
-                }
-            }
+    }
 
-            override fun onFinish() {
-                startTranslating()
-            }
-
-        }.start()
+    private fun translateEnemy(millisUntilFinished: Long) {
+        enemyList.flattenedForEach { enemy ->
+            enemy.translate(millisUntilFinished)
+        }
     }
 
     private fun resetEnemies() {

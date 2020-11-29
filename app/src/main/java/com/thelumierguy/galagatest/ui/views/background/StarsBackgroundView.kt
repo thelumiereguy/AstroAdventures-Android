@@ -1,4 +1,4 @@
-package com.thelumierguy.galagatest.ui.background
+package com.thelumierguy.galagatest.ui.views.background
 
 import android.content.Context
 import android.graphics.Canvas
@@ -6,7 +6,10 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.thelumierguy.galagatest.utils.GlobalCounter
 import com.thelumierguy.galagatest.utils.CustomLifeCycleOwner
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -44,8 +47,23 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
 
 
     init {
-//        setBackgroundColor(Color.BLUE)
         setWillNotDraw(false)
+    }
+
+    private fun startObservingTimer() {
+        GlobalCounter.startsBackgroundTimerFlow.onEach {
+            val starIterator = starsList.iterator()
+            while (starIterator.hasNext()) {
+                val star = starIterator.next()
+                star.translate()
+            }
+            invalidate()
+        }.launchIn(lifeCycleOwner.customViewLifeCycleScope)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        startObservingTimer()
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -59,27 +77,40 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
                     it.draw(canvas, starPaint)
                 }
             }
-
         }
     }
 
-    class Twinkles(private val height: Int, private val width: Int) {
+    class Twinkles(private val height: Int, width: Int) {
 
         var xCor = Random.nextInt(0, width).toFloat()
         var yCor = Random.nextInt(0, height).toFloat()
+        private val radius by lazy {
+            Random.nextInt(1, 7).toFloat()
+        }
+
+        private val speed by lazy {
+            when {
+                radius < 4F -> 0.5F
+                radius == 4F -> 1F
+                else -> 1.5F
+            }
+        }
 
         private val starColor by lazy {
-            Color.rgb(
-                Random.nextInt(0, 255),
-                Random.nextInt(0, 255),
-                Random.nextInt(0, 255)
-            )
+            Color.LTGRAY
         }
 
         fun draw(canvas: Canvas, starPaint: Paint) {
             starPaint.color = starColor
-            canvas.drawCircle(xCor, yCor, 3F, starPaint)
+            canvas.drawCircle(xCor, yCor, radius, starPaint)
 
+        }
+
+        fun translate() {
+            yCor += speed
+            if (yCor > height) {
+                yCor = 0F
+            }
         }
     }
 }

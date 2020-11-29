@@ -1,11 +1,11 @@
-package com.thelumierguy.galagatest.ui.bullets
+package com.thelumierguy.galagatest.ui.views.bullets
 
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import com.thelumierguy.galagatest.ui.base.BaseCustomView
+import com.thelumierguy.galagatest.ui.views.base.BaseCustomView
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
 
@@ -18,6 +18,9 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
         color = Color.parseColor("#F24423")
         isAntiAlias = false
         strokeWidth = 8F
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 4F
         isDither = false
     }
 
@@ -45,8 +48,8 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
     override fun onDraw(canvas: Canvas?) {
         canvas?.let {
             bulletStateList.iterator().forEach {
-                it.fire(canvas)
-                it.updatePosition()
+                it.drawBullet(canvas)
+                it.translate()
             }
             bulletStateList.cleanupBullets()
             if (bulletStateList.isNotEmpty()) {
@@ -89,12 +92,11 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
             MutableStateFlow(BulletCoordinates(bulletX, bulletY))
 
         init {
-            bulletTracker?.initBulletTracking(id,bulletPosition)
+            bulletTracker?.initBulletTracking(id, bulletPosition)
         }
 
 
-
-        fun fire(canvas: Canvas) {
+        fun drawBullet(canvas: Canvas) {
             if (bulletY > 0) {
                 canvas.drawLine(
                     bulletX,
@@ -106,7 +108,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
             }
         }
 
-        fun updatePosition() {
+        fun translate() {
             bulletY -= 10
             bulletPosition.value = BulletCoordinates(bulletX, bulletY)
             if (bulletY < 0) {
@@ -115,6 +117,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
         }
     }
 
+    override fun hasOverlappingRendering(): Boolean = false
 }
 
 interface BulletTracker {

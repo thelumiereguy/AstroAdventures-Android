@@ -1,7 +1,8 @@
-package com.thelumierguy.galagatest.ui.enemyShip
+package com.thelumierguy.galagatest.ui.views.enemyShip
 
-import com.thelumierguy.galagatest.ui.enemyShip.enemy.Enemy
+import android.util.Range
 
+typealias EnemyLocationRange = Range<Float>
 
 data class EnemyColumn(
     val range: EnemyLocationRange = EnemyLocationRange(0F, 0F),

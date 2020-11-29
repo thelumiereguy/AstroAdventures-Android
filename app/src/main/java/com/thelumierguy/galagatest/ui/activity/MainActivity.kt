@@ -1,54 +1,46 @@
-package com.thelumierguy.galagatest
+package com.thelumierguy.galagatest.ui.activity
 
-import android.os.Build
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.thelumierguy.galagatest.ui.bullets.BulletCoordinates
-import com.thelumierguy.galagatest.ui.bullets.BulletTracker
-import com.thelumierguy.galagatest.ui.bullets.BulletView
-import com.thelumierguy.galagatest.ui.enemyShip.EnemiesView
-import com.thelumierguy.galagatest.ui.enemyShip.OnCollisionDetector
-import com.thelumierguy.galagatest.ui.playership.SpaceShipView
+import androidx.lifecycle.ViewModelProvider
+import com.thelumierguy.galagatest.R
+import com.thelumierguy.galagatest.ui.observeScreenStates
+import com.thelumierguy.galagatest.ui.views.bullets.BulletCoordinates
+import com.thelumierguy.galagatest.ui.views.bullets.BulletTracker
+import com.thelumierguy.galagatest.ui.views.bullets.BulletView
+import com.thelumierguy.galagatest.ui.views.enemyShip.EnemyClusterView
+import com.thelumierguy.galagatest.ui.views.enemyShip.OnCollisionDetector
+import com.thelumierguy.galagatest.ui.views.playership.SpaceShipView
 import com.thelumierguy.galagatest.utils.AccelerometerManager
+import com.thelumierguy.galagatest.utils.goFullScreen
+import com.thelumierguy.galagatest.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
 
 class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector {
 
-    private val enemiesView: EnemiesView by lazy { findViewById(R.id.enemiesView) }
+    private val enemyClusterView: EnemyClusterView by lazy { findViewById(R.id.enemiesView) }
     private val bulletView: BulletView by lazy { findViewById(R.id.bulletView) }
     private val spaceShipView by lazy { findViewById<SpaceShipView>(R.id.spaceShipView) }
 
     private var accelerometerManager: AccelerometerManager? = null
 
+    val mainViewModel by lazy {
+        ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[MainViewModel::class.java]
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         goFullScreen()
         setContentView(R.layout.activity_main)
+        observeScreenStates()
         bulletView.bulletTracker = this
-        enemiesView.onCollisionDetector = this
+        enemyClusterView.onCollisionDetector = this
         bulletView.setOnClickListener {
             bulletView.shipY = spaceShipView.getShipY()
             bulletView.shipX = spaceShipView.getShipX()
         }
         addAccelerometerListener()
-    }
-
-    private fun goFullScreen() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.setDecorFitsSystemWindows(false)
-        } else {
-            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
-                    // Set the content to appear under the system bars so that the
-                    // content doesn't resize when the system bars hide and show.
-                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    // Hide the nav bar and status bar
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN)
-        }
     }
 
     private fun addAccelerometerListener() {
@@ -64,11 +56,11 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector {
         bulletId: UUID,
         bulletPosition: MutableStateFlow<BulletCoordinates>,
     ) {
-        enemiesView.checkCollision(bulletId, bulletPosition)
+        enemyClusterView.checkCollision(bulletId, bulletPosition)
     }
 
     override fun cancelTracking(bulletId: UUID) {
-        enemiesView.removeBullet(bulletId)
+        enemyClusterView.removeBullet(bulletId)
     }
 
     override fun onCollision(index: Int) {
