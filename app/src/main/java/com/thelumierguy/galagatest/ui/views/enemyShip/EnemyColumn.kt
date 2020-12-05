@@ -34,7 +34,7 @@ inline fun MutableList<EnemyColumn>.flattenedForEach(transform: (Enemy) -> Unit)
 inline fun MutableList<EnemyColumn>.checkIfYReached(maxHeight: Int, transform: (Boolean) -> Unit) {
     transform(
         flatMap { it.enemyList }.any {
-            (it.enemyY + it.radius) > maxHeight && it.isVisible
+            (it.enemyY + it.hitBoxRadius) > maxHeight && it.isVisible
         })
 }
 

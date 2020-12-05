@@ -1,4 +1,4 @@
-package com.thelumierguy.galagatest.ui.views.enemyShip.enemy.enemyshipdelegates
+package com.thelumierguy.galagatest.ui.views.enemyShip.enemyshipdelegates
 
 import android.graphics.*
 import com.thelumierguy.galagatest.ui.views.enemyShip.EnemyClusterView
@@ -30,10 +30,8 @@ class CapitalShip : IEnemyShip {
     private val paint by lazy {
         Paint().apply {
             color = mainColor
-            xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC)
             isAntiAlias = false
             isDither = false
-//            setShadowLayer(14F, 0F, 0F, color)
         }
     }
 

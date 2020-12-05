@@ -6,8 +6,8 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.thelumierguy.galagatest.utils.GlobalCounter
 import com.thelumierguy.galagatest.utils.CustomLifeCycleOwner
+import com.thelumierguy.galagatest.data.GlobalCounter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch

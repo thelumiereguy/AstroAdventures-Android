@@ -1,4 +1,4 @@
-package com.thelumierguy.galagatest.viewmodel
+package com.thelumierguy.galagatest.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

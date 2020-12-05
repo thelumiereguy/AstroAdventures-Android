@@ -1,4 +1,4 @@
-package com.thelumierguy.galagatest.utils
+package com.thelumierguy.galagatest.data
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ticker

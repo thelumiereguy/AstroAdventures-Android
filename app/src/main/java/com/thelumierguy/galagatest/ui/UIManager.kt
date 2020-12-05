@@ -2,7 +2,7 @@ package com.thelumierguy.galagatest.ui
 
 import androidx.lifecycle.lifecycleScope
 import com.thelumierguy.galagatest.ui.activity.MainActivity
-import com.thelumierguy.galagatest.viewmodel.ScreenStates
+import com.thelumierguy.galagatest.ui.viewmodel.ScreenStates
 import kotlinx.coroutines.flow.collect
 
 

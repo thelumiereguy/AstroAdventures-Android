@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.thelumierguy.galagatest.R
+import com.thelumierguy.galagatest.databinding.ActivityMainBinding
 import com.thelumierguy.galagatest.ui.observeScreenStates
+import com.thelumierguy.galagatest.ui.viewmodel.MainViewModel
 import com.thelumierguy.galagatest.ui.views.bullets.BulletCoordinates
 import com.thelumierguy.galagatest.ui.views.bullets.BulletTracker
 import com.thelumierguy.galagatest.ui.views.bullets.BulletView
@@ -12,16 +14,14 @@ import com.thelumierguy.galagatest.ui.views.enemyShip.EnemyClusterView
 import com.thelumierguy.galagatest.ui.views.enemyShip.OnCollisionDetector
 import com.thelumierguy.galagatest.ui.views.playership.SpaceShipView
 import com.thelumierguy.galagatest.utils.AccelerometerManager
+import com.thelumierguy.galagatest.utils.MusicManager
 import com.thelumierguy.galagatest.utils.goFullScreen
-import com.thelumierguy.galagatest.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
 
 class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector {
 
-    private val enemyClusterView: EnemyClusterView by lazy { findViewById(R.id.enemiesView) }
-    private val bulletView: BulletView by lazy { findViewById(R.id.bulletView) }
-    private val spaceShipView by lazy { findViewById<SpaceShipView>(R.id.spaceShipView) }
+    private lateinit var binding: ActivityMainBinding
 
     private var accelerometerManager: AccelerometerManager? = null
 
@@ -32,23 +32,31 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         goFullScreen()
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         observeScreenStates()
-        bulletView.bulletTracker = this
-        enemyClusterView.onCollisionDetector = this
-        bulletView.setOnClickListener {
-            bulletView.shipY = spaceShipView.getShipY()
-            bulletView.shipX = spaceShipView.getShipX()
+        binding.bulletView.bulletTracker = this
+        binding.enemiesView.onCollisionDetector = this
+        binding.bulletView.setOnClickListener {
+            binding.bulletView.shipY = binding.spaceShipView.getShipY()
+            binding.bulletView.shipX = binding.spaceShipView.getShipX()
         }
         addAccelerometerListener()
+        startMusic()
     }
 
     private fun addAccelerometerListener() {
-        accelerometerManager = AccelerometerManager(this) { sensorEvent ->
-            spaceShipView.processSensorEvents(sensorEvent)
+        accelerometerManager = AccelerometerManager(applicationContext) { sensorEvent ->
+            binding.spaceShipView.processSensorEvents(sensorEvent)
         }
         accelerometerManager?.let {
             lifecycle.addObserver(it)
+        }
+    }
+
+    private fun startMusic() {
+        MusicManager(applicationContext).run {
+            lifecycle.addObserver(this)
         }
     }
 
@@ -56,14 +64,14 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector {
         bulletId: UUID,
         bulletPosition: MutableStateFlow<BulletCoordinates>,
     ) {
-        enemyClusterView.checkCollision(bulletId, bulletPosition)
+        binding.enemiesView.checkCollision(bulletId, bulletPosition)
     }
 
     override fun cancelTracking(bulletId: UUID) {
-        enemyClusterView.removeBullet(bulletId)
+        binding.enemiesView.removeBullet(bulletId)
     }
 
     override fun onCollision(index: Int) {
-        bulletView.destroyBullet(index)
+        binding.bulletView.destroyBullet(index)
     }
 }

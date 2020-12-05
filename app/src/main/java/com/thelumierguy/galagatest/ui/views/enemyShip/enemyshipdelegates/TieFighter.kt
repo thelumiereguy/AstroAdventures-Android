@@ -1,4 +1,4 @@
-package com.thelumierguy.galagatest.ui.views.enemyShip.enemy.enemyshipdelegates
+package com.thelumierguy.galagatest.ui.views.enemyShip.enemyshipdelegates
 
 import android.graphics.*
 import com.thelumierguy.galagatest.ui.views.enemyShip.EnemyClusterView

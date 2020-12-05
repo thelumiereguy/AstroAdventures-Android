@@ -7,7 +7,7 @@ import android.util.AttributeSet
 import android.util.Log
 import com.thelumierguy.galagatest.ui.views.base.BaseCustomView
 import com.thelumierguy.galagatest.ui.views.bullets.BulletCoordinates
-import com.thelumierguy.galagatest.utils.GlobalCounter.timerFlow
+import com.thelumierguy.galagatest.data.GlobalCounter.timerFlow
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.*
@@ -23,7 +23,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
 
         var rowSize = 4
 
-        var speed = 3F
+        var speed = 2F
     }
 
     var onCollisionDetector: OnCollisionDetector? = null
@@ -171,7 +171,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
 fun List<Enemy>.getRangeX(): Pair<Float, Float> {
     return if (size > 0) {
         val enemy = get(0)
-        Pair(enemy.enemyX - enemy.radius, enemy.enemyX + enemy.radius)
+        Pair(enemy.enemyX - enemy.hitBoxRadius, enemy.enemyX + enemy.hitBoxRadius)
     } else {
         Pair(0F, 0F)
     }
