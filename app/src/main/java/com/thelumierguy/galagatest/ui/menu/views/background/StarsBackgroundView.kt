@@ -1,10 +1,11 @@
-package com.thelumierguy.galagatest.ui.views.background
+package com.thelumierguy.galagatest.ui.menu.views.background
 
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.thelumierguy.galagatest.utils.CustomLifeCycleOwner
 import com.thelumierguy.galagatest.data.GlobalCounter
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) :
-    ConstraintLayout(context, attributeSet) {
+    FrameLayout(context, attributeSet) {
 
 
     private val lifeCycleOwner by lazy { CustomLifeCycleOwner() }

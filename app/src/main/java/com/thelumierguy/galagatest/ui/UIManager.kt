@@ -1,33 +1,49 @@
 package com.thelumierguy.galagatest.ui
 
 import androidx.lifecycle.lifecycleScope
-import com.thelumierguy.galagatest.ui.activity.MainActivity
-import com.thelumierguy.galagatest.ui.viewmodel.ScreenStates
+import androidx.transition.Fade
+import androidx.transition.Scene
+import androidx.viewbinding.ViewBinding
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 
 
 fun MainActivity.observeScreenStates() {
     lifecycleScope.launchWhenCreated {
-        mainViewModel.observeScreenState().collect {
+        viewModel.observeScreenState().collect {
             when (it) {
-                ScreenStates.APP_INIT -> {
-//                    transitionToScene(appInitScene)
+                ScreenStates.AppInit -> {
+                    transitionTo(initScene.scene, Fade(Fade.MODE_IN))
                 }
-                ScreenStates.GAME_MENU -> {
-//                    transitionToScene(gameMenuScene)
-//                    gameMenuScene.sceneRoot.findViewById<LogoView>(R.id.imageView)?.enableTinkling =
-//                        true
-//                    gameMenuScene.sceneRoot.findViewById<BlinkingImage>(R.id.iv_text)
-//                        ?.startBlinking()
+                ScreenStates.GameMenu -> {
+                    transitionFromTo(initScene.scene, gameMenuScene.scene, Fade(Fade.MODE_IN))
                 }
-                ScreenStates.START_GAME -> {
-//                    transitionToScene(startGameScene)
-//                    startGameScene.sceneRoot.findViewById<ImageView>(R.id.iv_pause)
-//                        .setOnClickListener {
-//                            onBackPressed()
-//                        }
+                ScreenStates.StartGame -> {
+                    transitionFromTo(gameMenuScene.scene, startGameScene.scene, Fade(Fade.MODE_IN))
+                    startGameScene.binding.bulletView.bulletTracker = this@observeScreenStates
+                    startGameScene.binding.enemiesView.onCollisionDetector =
+                        this@observeScreenStates
+                    startGameScene.binding.bulletView.setOnClickListener {
+                        startGameScene.binding.bulletView.shipY =
+                            startGameScene.binding.spaceShipView.getShipY()
+                        startGameScene.binding.bulletView.shipX =
+                            startGameScene.binding.spaceShipView.getShipX()
+                    }
+                }
+                ScreenStates.LevelComplete -> {
+
+                }
+                ScreenStates.GameOver -> {
+
                 }
             }
         }
     }
+
+    lifecycleScope.launchWhenCreated {
+        delay(2000)
+        viewModel.updateUIState(ScreenStates.GameMenu)
+    }
 }
+
+data class SceneContainer<Binding : ViewBinding>(val binding: Binding, val scene: Scene)

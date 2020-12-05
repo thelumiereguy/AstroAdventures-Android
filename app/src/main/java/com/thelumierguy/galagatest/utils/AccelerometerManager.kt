@@ -9,7 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 
-class AccelerometerManager(context: Context, onUpdateCallBack: (SensorEvent) -> Unit) : LifecycleObserver {
+class AccelerometerManager(context: Context, onUpdateCallBack: (SensorEvent) -> Unit) {
 
     private val gyroscopeSensor: Sensor by lazy {
         sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -27,7 +27,6 @@ class AccelerometerManager(context: Context, onUpdateCallBack: (SensorEvent) -> 
         override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun startListening() {
         sensorManager.registerListener(
             gyroscopeSensorListener,
@@ -35,7 +34,7 @@ class AccelerometerManager(context: Context, onUpdateCallBack: (SensorEvent) -> 
         )
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+
     fun stopListening() {
         sensorManager.unregisterListener(gyroscopeSensorListener)
     }

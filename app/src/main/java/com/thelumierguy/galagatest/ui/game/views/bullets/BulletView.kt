@@ -1,11 +1,11 @@
-package com.thelumierguy.galagatest.ui.views.bullets
+package com.thelumierguy.galagatest.ui.game.views.bullets
 
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import com.thelumierguy.galagatest.ui.views.base.BaseCustomView
+import com.thelumierguy.galagatest.ui.base.BaseCustomView
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
 

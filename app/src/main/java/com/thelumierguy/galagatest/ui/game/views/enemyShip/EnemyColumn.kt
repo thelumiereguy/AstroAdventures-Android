@@ -1,4 +1,4 @@
-package com.thelumierguy.galagatest.ui.views.enemyShip
+package com.thelumierguy.galagatest.ui.game.views.enemyShip
 
 import android.util.Range
 

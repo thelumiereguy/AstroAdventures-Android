@@ -18,11 +18,22 @@
     </style>
 
 
-    <style name="Text.24" parent="TextAppearance.AppCompat.Body1">
-        <item name="android:textSize">24sp</item>
+    <style name="Text.Headline6" parent="TextAppearance.MaterialComponents.Headline6" />
+
+    <style name="Text.Headline6.ComputerFont">
+        <item name="fontFamily">@font/computerpixel7</item>
     </style>
 
-    <style name="Text.24.ComputerFont">
+    <style name="Text.Headline5" parent="TextAppearance.MaterialComponents.Headline5" />
+
+    <style name="Text.Headline5.ComputerFont">
+        <item name="fontFamily">@font/computerpixel7</item>
+    </style>
+
+
+    <style name="Text.Headline3" parent="TextAppearance.MaterialComponents.Headline3" />
+
+    <style name="Text.Headline3.ComputerFont">
         <item name="fontFamily">@font/computerpixel7</item>
     </style>
 

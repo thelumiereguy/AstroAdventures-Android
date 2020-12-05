@@ -1,11 +1,13 @@
-package com.thelumierguy.galagatest.ui.views.playership
+package com.thelumierguy.galagatest.ui.game.views.playership
 
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.PictureDrawable
 import android.hardware.SensorEvent
 import android.util.AttributeSet
-import com.thelumierguy.galagatest.ui.views.base.BaseCustomView
+import com.thelumierguy.galagatest.databinding.GameSceneBinding
+import com.thelumierguy.galagatest.ui.base.BaseCustomView
+import com.thelumierguy.galagatest.utils.AccelerometerManager
 import com.thelumierguy.galagatest.utils.lowPass
 import kotlin.math.roundToInt
 
@@ -13,7 +15,10 @@ import kotlin.math.roundToInt
 class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
     BaseCustomView(context, attributeSet) {
 
+    private var accelerometerManager: AccelerometerManager? = null
+
     private var currentShipPosition: Float = 0F
+
     private val bodyPaint = Paint().apply {
         color = Color.parseColor("#DEDEDE")
         isAntiAlias = false
@@ -84,6 +89,16 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         pictureDrawable = PictureDrawable(spaceShipPicture)
 
         postInvalidate()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        accelerometerManager?.startListening()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        accelerometerManager?.stopListening()
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -258,6 +273,12 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
 
     private fun magnifyValue() {
         translationXValue = multiplicationFactor * gravityValue[0]
+    }
+
+    private fun addAccelerometerListener() {
+        accelerometerManager = AccelerometerManager(context.applicationContext) { sensorEvent ->
+            processSensorEvents(sensorEvent)
+        }
     }
 
 }

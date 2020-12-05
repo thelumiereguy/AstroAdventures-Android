@@ -1,7 +1,7 @@
-package com.thelumierguy.galagatest.ui.views.enemyShip.enemyshipdelegates
+package com.thelumierguy.galagatest.ui.game.views.enemyShip.enemyshipdelegates
 
 import android.graphics.*
-import com.thelumierguy.galagatest.ui.views.enemyShip.EnemyClusterView
+import com.thelumierguy.galagatest.ui.game.views.enemyShip.EnemyClusterView
 import kotlin.random.Random
 
 

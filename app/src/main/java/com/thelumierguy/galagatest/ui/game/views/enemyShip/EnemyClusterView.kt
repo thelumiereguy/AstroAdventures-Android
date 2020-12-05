@@ -1,12 +1,12 @@
-package com.thelumierguy.galagatest.ui.views.enemyShip
+package com.thelumierguy.galagatest.ui.game.views.enemyShip
 
 import android.content.Context
 import android.graphics.Canvas
 import android.os.CountDownTimer
 import android.util.AttributeSet
 import android.util.Log
-import com.thelumierguy.galagatest.ui.views.base.BaseCustomView
-import com.thelumierguy.galagatest.ui.views.bullets.BulletCoordinates
+import com.thelumierguy.galagatest.ui.base.BaseCustomView
+import com.thelumierguy.galagatest.ui.game.views.bullets.BulletCoordinates
 import com.thelumierguy.galagatest.data.GlobalCounter.timerFlow
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren

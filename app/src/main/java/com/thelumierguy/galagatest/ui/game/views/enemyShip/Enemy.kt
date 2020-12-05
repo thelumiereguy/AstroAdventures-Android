@@ -1,11 +1,11 @@
-package com.thelumierguy.galagatest.ui.views.enemyShip
+package com.thelumierguy.galagatest.ui.game.views.enemyShip
 
 import android.graphics.Canvas
 import android.util.Range
-import com.thelumierguy.galagatest.ui.views.enemyShip.enemyshipdelegates.AlienShip
-import com.thelumierguy.galagatest.ui.views.enemyShip.enemyshipdelegates.CapitalShip
-import com.thelumierguy.galagatest.ui.views.enemyShip.enemyshipdelegates.IEnemyShip
-import com.thelumierguy.galagatest.ui.views.enemyShip.enemyshipdelegates.TieFighter
+import com.thelumierguy.galagatest.ui.game.views.enemyShip.enemyshipdelegates.AlienShip
+import com.thelumierguy.galagatest.ui.game.views.enemyShip.enemyshipdelegates.CapitalShip
+import com.thelumierguy.galagatest.ui.game.views.enemyShip.enemyshipdelegates.IEnemyShip
+import com.thelumierguy.galagatest.ui.game.views.enemyShip.enemyshipdelegates.TieFighter
 import kotlin.random.Random
 
 

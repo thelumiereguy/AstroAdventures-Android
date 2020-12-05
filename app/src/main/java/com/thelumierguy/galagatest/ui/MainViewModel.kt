@@ -1,4 +1,4 @@
-package com.thelumierguy.galagatest.ui.viewmodel
+package com.thelumierguy.galagatest.ui
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 class MainViewModel : ViewModel() {
 
     private val screenStateFlow: MutableStateFlow<ScreenStates> =
-        MutableStateFlow(ScreenStates.APP_INIT)
+        MutableStateFlow(ScreenStates.AppInit)
 
     fun observeScreenState(): StateFlow<ScreenStates> = screenStateFlow
 
@@ -17,7 +17,9 @@ class MainViewModel : ViewModel() {
 }
 
 sealed class ScreenStates {
-    object APP_INIT : ScreenStates()
-    object GAME_MENU : ScreenStates()
-    object START_GAME : ScreenStates()
+    object AppInit : ScreenStates()
+    object GameMenu : ScreenStates()
+    object StartGame : ScreenStates()
+    object LevelComplete : ScreenStates()
+    object GameOver : ScreenStates()
 }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <com.thelumierguy.galagatest.ui.menu.views.logo.LogoTextView
+            android:id="@+id/logoView"
+            style="@style/Text.Headline3.ComputerFont"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="12dp"
+            android:gravity="center"
+            android:text="Galactic Adventures" />
+
+    </FrameLayout>
+
+
+    <TextView
+        style="@style/Text.Headline6.ComputerFont"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Touch anywhere to start the game" />
+
+</LinearLayout>

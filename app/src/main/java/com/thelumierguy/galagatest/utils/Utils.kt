@@ -3,6 +3,8 @@ package com.thelumierguy.galagatest.utils
 import android.os.Build
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.transition.Scene
+import androidx.viewbinding.ViewBinding
 
 const val ALPHA = 0.05F
 

@@ -8,15 +8,13 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.thelumierguy.galagatest.R
 
-class MusicManager(context: Context) : LifecycleObserver {
+class MusicManager(val context: Context) : LifecycleObserver {
 
     private var mediaPlayer: MediaPlayer? = null
 
-    init {
-        mediaPlayer = MediaPlayer.create(context, R.raw.music)
-    }
 
     private fun startMusic() {
+        mediaPlayer = MediaPlayer.create(context, R.raw.music)
         mediaPlayer?.setOnPreparedListener {
             it.start()
         }
@@ -33,6 +31,10 @@ class MusicManager(context: Context) : LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun stopListening() {
         mediaPlayer?.stop()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun releaseComponents() {
         mediaPlayer?.release()
     }
 }

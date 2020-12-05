@@ -1,4 +1,4 @@
-package com.thelumierguy.galagatest.ui.views.base
+package com.thelumierguy.galagatest.ui.base
 
 import android.content.Context
 import android.util.AttributeSet

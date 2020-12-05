@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.thelumierguy.galagatest.ui.views.background.StarsBackgroundView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.thelumierguy.galagatest.ui.menu.views.background.StarsBackgroundView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
-    tools:context=".ui.activity.MainActivity">
+    tools:context=".ui.MainActivity">
 
     <TextView
-        style="@style/Text.24.ComputerFont"
+        style="@style/Text.Headline5.ComputerFont"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAlignment="center"
         android:text="Please turn up your volume"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_gravity="center"/>
 
-</com.thelumierguy.galagatest.ui.views.background.StarsBackgroundView>
+</com.thelumierguy.galagatest.ui.menu.views.background.StarsBackgroundView>
