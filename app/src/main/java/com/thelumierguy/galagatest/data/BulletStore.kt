@@ -4,10 +4,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.math.roundToInt
 
-class BulletStore(val maxCount: Float,val onEmptyCallback: () -> Unit) {
+class BulletStore(val maxCount: Float) {
 
     companion object {
-        const val HALF_REFILL = 100F
+        const val HALF_REFILL = 60F
     }
 
     private val bulletCountFlow = MutableStateFlow(HALF_REFILL.roundToInt())
@@ -16,10 +16,9 @@ class BulletStore(val maxCount: Float,val onEmptyCallback: () -> Unit) {
 
     fun updateInventory() {
         bulletCountFlow.value--
-        if (bulletCountFlow.value == 0) {
-            onEmptyCallback()
-        }
     }
+
+    fun getAmmoCount() = bulletCountFlow.value
 
 //    fun refillInventory(resetCount: Int) {
 //        bulletCountFlow.value = resetCount

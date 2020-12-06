@@ -2,11 +2,9 @@ package com.thelumierguy.galagatest.ui.game.views.enemyShip
 
 import android.content.Context
 import android.graphics.Canvas
-import android.os.CountDownTimer
 import android.util.AttributeSet
 import android.util.Log
 import com.thelumierguy.galagatest.data.GlobalCounter.enemyTimerFlow
-import com.thelumierguy.galagatest.data.Score
 import com.thelumierguy.galagatest.ui.base.BaseCustomView
 import com.thelumierguy.galagatest.ui.game.views.bullets.BulletCoordinates
 import kotlinx.coroutines.Job
@@ -37,7 +35,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
         EnemyColumn()
     )
 
-    private var timer: CountDownTimer? = null
+    var translateJob: Job = Job()
 
     private val bulletPositionList: MutableList<Pair<UUID, MutableStateFlow<BulletCoordinates>>> =
         mutableListOf()
@@ -72,23 +70,32 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
         startTranslating()
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        translateJob.cancel()
+    }
+
+
+
     /**
      * Counter for translating the enemies
      */
     private fun startTranslating() {
-        enemyTimerFlow.onEach {
-            Log.d("ping", it.toString())
-            enemyList.checkIfYReached(measuredHeight) { hasReachedMax ->
-                if (hasReachedMax) {
-                    resetEnemies()
-                }
-                if (enemyList.isNotEmpty()) {
-                    translateEnemy(System.currentTimeMillis())
-                    invalidate()
+        translateJob.cancel()
+        translateJob = lifeCycleOwner.customViewLifeCycleScope.launch {
+            enemyTimerFlow.collect {
+                Log.d("ping ${System.identityHashCode(this)}", it.toString())
+                enemyList.checkIfYReached(measuredHeight) { hasReachedMax ->
+                    if (hasReachedMax) {
+                        resetEnemies()
+                    }
+                    if (enemyList.isNotEmpty()) {
+                        translateEnemy(System.currentTimeMillis())
+                        invalidate()
+                    }
                 }
             }
-        }.launchIn(lifeCycleOwner.customViewLifeCycleScope)
-
+        }
     }
 
     private fun translateEnemy(millisUntilFinished: Long) {
@@ -98,7 +105,6 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
     }
 
     private fun resetEnemies() {
-        timer?.cancel()
         enemyList.clear()
         enemyDetailsCallback?.onGameOver()
         postInvalidate()

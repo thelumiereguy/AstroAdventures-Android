@@ -56,7 +56,13 @@ fun MainActivity.observeScreenStates() {
 
                                 interpolator = AccelerateDecelerateInterpolator()
                             }
-                            transitionFromTo(initScene.scene, gameMenuScene.scene, transition)
+                            if (viewModel.previousState == ScreenStates.GameOver) {
+                                transitionFromTo(gameOverScene.scene,
+                                    gameMenuScene.scene,
+                                    transition)
+                            } else {
+                                transitionFromTo(initScene.scene, gameMenuScene.scene, transition)
+                            }
                         }
                         gameMenuScene.binding.btnStart.setOnClickListener {
                             viewModel.updateUIState(ScreenStates.StartGame)
@@ -71,18 +77,21 @@ fun MainActivity.observeScreenStates() {
 
                     ScreenStates.StartGame -> {
                         resetScore()
+                        startGameScene()
                         gameScene.binding.apply {
-                            val bulletStore = BulletStore(BulletStore.HALF_REFILL) {
-                                bulletView.isEnabled = false
-                                viewModel.updateUIState(ScreenStates.RanOutOfAmmo)
-                            }
+                            val bulletStore = BulletStore(BulletStore.HALF_REFILL)
                             bulletView.bulletTracker = this@observeScreenStates
                             enemiesView.enemyDetailsCallback = this@observeScreenStates
                             enemiesView.onCollisionDetector = this@observeScreenStates
                             bulletView.setOnClickListener {
-                                bulletStore.updateInventory()
-                                bulletView.shipY = spaceShipView.getShipY()
-                                bulletView.shipX = spaceShipView.getShipX()
+                                if (bulletStore.getAmmoCount() != 0) {
+                                    bulletStore.updateInventory()
+                                    bulletView.shipY = spaceShipView.getShipY()
+                                    bulletView.shipX = spaceShipView.getShipX()
+                                } else {
+                                    it.isEnabled = false
+                                    viewModel.updateUIState(ScreenStates.RanOutOfAmmo)
+                                }
                             }
                             lifecycleScope.launchWhenCreated {
                                 scoreFlow().collect { score ->
@@ -120,6 +129,14 @@ fun MainActivity.observeScreenStates() {
                             scoreView.text =
                                 getString(R.string.score_text, scoreFlow().value)
 
+                            if (viewModel.previousState == ScreenStates.YouDied) {
+                                diedSubtitle.text = getString(R.string.enemyBreached)
+                            } else {
+                                val conserveAmmoText = getString(R.string.conserveAmmo)
+                                diedSubtitle.text =
+                                    conserveAmmoText + getString(R.string.enemyBreached)
+                            }
+
                             btnMainMenu.setOnClickListener {
                                 viewModel.updateUIState(ScreenStates.GameMenu)
                             }
@@ -152,19 +169,8 @@ fun MainActivity.observeScreenStates() {
                         }
                     }
 
-
                     ScreenStates.RanOutOfAmmo -> {
-                        youDiedScene.binding.diedText.text = getString(R.string.you_lost)
-                        transitionFromTo(gameScene.scene,
-                            youDiedScene.scene,
-                            Fade(Fade.MODE_IN).apply {
-                                addTarget(youDiedScene.binding.diedText)
-                                duration = 1600L
-                            })
-                        lifecycleScope.launchWhenCreated {
-                            delay(2000L)
-                            viewModel.updateUIState(ScreenStates.GameOver)
-                        }
+                        viewModel.updateUIState(ScreenStates.GameOver)
                     }
                 }
             }

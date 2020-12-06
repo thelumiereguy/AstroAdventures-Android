@@ -24,7 +24,27 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.26999998" />
+        app:layout_constraintVertical_bias="0.39" />
+
+
+    <TextView
+        android:id="@+id/died_subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:letterSpacing="0.1"
+        android:lineSpacingMultiplier="1.1"
+        android:textAlignment="center"
+        android:textColor="@color/shipShadowColor"
+        android:textSize="24sp"
+        app:fontFamily="@font/computerpixel7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/died_text"
+        app:layout_constraintWidth_percent="0.75" />
 
 
     <TextView
@@ -32,19 +52,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         android:letterSpacing="0.1"
         android:text="@string/score_text"
         android:textAlignment="center"
         android:textColor="@color/primaryFontColor"
         android:textSize="24sp"
         app:fontFamily="@font/computerpixel7"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/died_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/died_text"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <com.thelumierguy.galagatest.ui.menu.views.buttons.MenuButtonView
         android:id="@+id/btn_try_again"
@@ -56,7 +76,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scoreView"
+        app:layout_constraintTop_toBottomOf="@+id/died_subtitle"
+        app:layout_constraintVertical_bias="0.76"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintWidth_percent="0.5" />
 

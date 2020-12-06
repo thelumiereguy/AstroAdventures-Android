@@ -24,41 +24,17 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
         ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[MainViewModel::class.java]
     }
 
-    val initScene by lazy {
-        GameInitScreenBinding.inflate(layoutInflater, binding.root, false).let {
-            SceneContainer(it, Scene(binding.rootContainer, it.root))
-        }
-    }
+    lateinit var initScene: SceneContainer<GameInitScreenBinding>
 
-    val levelCompleteScene by lazy {
-        LevelCompleteSceneBinding.inflate(layoutInflater, binding.root, false).let {
-            SceneContainer(it, Scene(binding.rootContainer, it.root))
-        }
-    }
+    lateinit var levelCompleteScene: SceneContainer<LevelCompleteSceneBinding>
 
-    val gameMenuScene by lazy {
-        MainMenuSceneBinding.inflate(layoutInflater, binding.root, false).let {
-            SceneContainer(it, Scene(binding.rootContainer, it.root))
-        }
-    }
+    lateinit var gameMenuScene: SceneContainer<MainMenuSceneBinding>
 
-    val youDiedScene by lazy {
-        YouDiedSceneBinding.inflate(layoutInflater, binding.root, false).let {
-            SceneContainer(it, Scene(binding.rootContainer, it.root))
-        }
-    }
+    lateinit var youDiedScene: SceneContainer<YouDiedSceneBinding>
 
-    val gameScene by lazy {
-        GameSceneBinding.inflate(layoutInflater, binding.root, false).let {
-            SceneContainer(it, Scene(binding.rootContainer, it.root))
-        }
-    }
+    lateinit var gameScene: SceneContainer<GameSceneBinding>
 
-    val gameOverScene by lazy {
-        GameOverSceneBinding.inflate(layoutInflater, binding.root, false).let {
-            SceneContainer(it, Scene(binding.rootContainer, it.root))
-        }
-    }
+    lateinit var gameOverScene: SceneContainer<GameOverSceneBinding>
 
     private val transitionManager by lazy {
         TransitionManager()
@@ -69,8 +45,38 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
         goFullScreen()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        initScenes()
         observeScreenStates()
         startMusic()
+    }
+
+    private fun initScenes() {
+        initScene =
+            GameInitScreenBinding.inflate(layoutInflater, binding.root, false).let {
+                SceneContainer(it, Scene(binding.rootContainer, it.root))
+            }
+
+        levelCompleteScene =
+            LevelCompleteSceneBinding.inflate(layoutInflater, binding.root, false).let {
+                SceneContainer(it, Scene(binding.rootContainer, it.root))
+            }
+
+        gameMenuScene =
+            MainMenuSceneBinding.inflate(layoutInflater, binding.root, false).let {
+                SceneContainer(it, Scene(binding.rootContainer, it.root))
+            }
+
+        youDiedScene =
+            YouDiedSceneBinding.inflate(layoutInflater, binding.root, false).let {
+                SceneContainer(it, Scene(binding.rootContainer, it.root))
+            }
+
+        startGameScene()
+
+        gameOverScene =
+            GameOverSceneBinding.inflate(layoutInflater, binding.root, false).let {
+                SceneContainer(it, Scene(binding.rootContainer, it.root))
+            }
     }
 
     private fun startMusic() {
@@ -94,6 +100,20 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
         gameScene.binding.bulletView.destroyBullet(index)
     }
 
+    override fun onAllEliminated() {
+        viewModel.updateUIState(ScreenStates.LevelComplete)
+    }
+
+    fun startGameScene() {
+        binding.rootContainer.removeAllViews()
+        gameScene = GameSceneBinding.inflate(layoutInflater, binding.root, false).let {
+            SceneContainer(it, Scene(binding.rootContainer, it.root))
+        }
+    }
+
+    override fun onGameOver() {
+        viewModel.updateUIState(ScreenStates.YouDied)
+    }
 
     fun transitionFromTo(fromScene: Scene, toScene: Scene, transition: Transition) {
         transitionManager.setTransition(fromScene, toScene, transition)
@@ -105,11 +125,4 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
         transitionManager.transitionTo(toScene)
     }
 
-    override fun onAllEliminated() {
-        viewModel.updateUIState(ScreenStates.LevelComplete)
-    }
-
-    override fun onGameOver() {
-        viewModel.updateUIState(ScreenStates.YouDied)
-    }
 }
