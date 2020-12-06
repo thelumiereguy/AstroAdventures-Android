@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">Galaga Remake</string>
+    <string name="app_name">Astro Adventures</string>
+    <string name="score_text">Score : %1$d</string>
+    <string name="start_game">Start Game</string>
+    <string name="exit">Exit</string>
+    <string name="view_scores">View Scores</string>
+    <string name="please_turn_up_your_volume">Please turn up your volume</string>
 </resources>

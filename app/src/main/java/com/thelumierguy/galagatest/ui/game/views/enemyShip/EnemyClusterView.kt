@@ -5,9 +5,10 @@ import android.graphics.Canvas
 import android.os.CountDownTimer
 import android.util.AttributeSet
 import android.util.Log
+import com.thelumierguy.galagatest.data.GlobalCounter.enemyTimerFlow
+import com.thelumierguy.galagatest.data.Score
 import com.thelumierguy.galagatest.ui.base.BaseCustomView
 import com.thelumierguy.galagatest.ui.game.views.bullets.BulletCoordinates
-import com.thelumierguy.galagatest.data.GlobalCounter.timerFlow
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.*
@@ -73,7 +74,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
      * Counter for translating the enemies
      */
     private fun startTranslating() {
-        timerFlow.onEach {
+        enemyTimerFlow.onEach {
             Log.d("ping", it.toString())
             enemyList.checkIfYReached(measuredHeight) { hasReachedMax ->
                 if (hasReachedMax) {
@@ -154,6 +155,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
             }
         }
         postInvalidate()
+        Score.updateScore(25)
     }
 
     fun removeBullet(bullet: UUID) {

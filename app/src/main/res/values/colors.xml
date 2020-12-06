@@ -7,4 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="backgroundColor">#251d29</color>
+    <color name="backgroundColorDark">#1B151F</color>
+    <color name="primaryFontColor">#F29E44</color>
+    <color name="secondaryFontColor">#e3e6c5</color>
+    <color name="starColor">#B3A3CC</color>
+    <color name="shipShadowColor">#5C6373</color>
+    <color name="shipHighLightColor">#9caebb</color>
+    <color name="bulletColor">#fbcdcd</color>
 </resources>

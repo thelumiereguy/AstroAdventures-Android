@@ -93,7 +93,10 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        accelerometerManager?.startListening()
+        if (!isInEditMode) {
+            addAccelerometerListener()
+            accelerometerManager?.startListening()
+        }
     }
 
     override fun onDetachedFromWindow() {

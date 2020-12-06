@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.thelumierguy.galagatest.ui.menu.views.background.StarsBackgroundView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,11 +8,15 @@
     tools:context=".ui.MainActivity">
 
     <TextView
-        style="@style/Text.Headline5.ComputerFont"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:letterSpacing="0.1"
+        android:text="@string/please_turn_up_your_volume"
         android:textAlignment="center"
-        android:text="Please turn up your volume"
-        android:layout_gravity="center"/>
+        android:textColor="@color/primaryFontColor"
+        android:textSize="24sp"
+        android:textStyle="italic|bold"
+        app:fontFamily="@font/computerpixel7" />
 
-</com.thelumierguy.galagatest.ui.menu.views.background.StarsBackgroundView>
+</FrameLayout>

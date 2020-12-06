@@ -2,13 +2,13 @@ package com.thelumierguy.galagatest.ui.menu.views.background
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.thelumierguy.galagatest.utils.CustomLifeCycleOwner
+import androidx.core.content.res.ResourcesCompat
+import com.thelumierguy.galagatest.R
 import com.thelumierguy.galagatest.data.GlobalCounter
+import com.thelumierguy.galagatest.utils.CustomLifeCycleOwner
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -31,7 +31,13 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
     }
 
     private val starPaint by lazy {
-        Paint()
+        Paint().apply {
+            isDither = false
+            isAntiAlias = false
+            color = ResourcesCompat.getColor(context.resources,
+                R.color.starColor,
+                null)
+        }
     }
 
     private val starsList by lazy {
@@ -40,19 +46,15 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
         }
     }
 
-    private var enableTinkling = true
-        set(value) {
-            field = value
-            invalidate()
-        }
-
-
     init {
+        setBackgroundColor(ResourcesCompat.getColor(context.resources,
+            R.color.backgroundColor,
+            null))
         setWillNotDraw(false)
     }
 
     private fun startObservingTimer() {
-        GlobalCounter.startsBackgroundTimerFlow.onEach {
+        GlobalCounter.starsBackgroundTimerFlow.onEach {
             val starIterator = starsList.iterator()
             while (starIterator.hasNext()) {
                 val star = starIterator.next()
@@ -69,7 +71,7 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        if (isInEditMode || !enableTinkling) {
+        if (isInEditMode) {
             return
         }
         canvas?.let {
@@ -96,15 +98,21 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
                 else -> 1.5F
             }
         }
-
-        private val starColor by lazy {
-            Color.LTGRAY
+        private val diameter by lazy {
+            radius * 2F
         }
 
         fun draw(canvas: Canvas, starPaint: Paint) {
-            starPaint.color = starColor
+            starPaint.alpha = 255
             canvas.drawCircle(xCor, yCor, radius, starPaint)
 
+            if (radius < 3) {
+                starPaint.alpha = 128
+                canvas.drawCircle(xCor + diameter, yCor, radius, starPaint)
+                canvas.drawCircle(xCor - diameter, yCor, radius, starPaint)
+                canvas.drawCircle(xCor, yCor + diameter, radius, starPaint)
+                canvas.drawCircle(xCor, yCor - diameter, radius, starPaint)
+            }
         }
 
         fun translate() {

@@ -2,9 +2,10 @@ package com.thelumierguy.galagatest.ui.game.views.bullets
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import androidx.core.content.res.ResourcesCompat
+import com.thelumierguy.galagatest.R
 import com.thelumierguy.galagatest.ui.base.BaseCustomView
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
@@ -15,7 +16,9 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
     var bulletTracker: BulletTracker? = null
 
     private val jetPaint = Paint().apply {
-        color = Color.parseColor("#F24423")
+        color = ResourcesCompat.getColor(context.resources,
+            R.color.bulletColor,
+            null)
         isAntiAlias = false
         strokeWidth = 8F
         style = Paint.Style.STROKE

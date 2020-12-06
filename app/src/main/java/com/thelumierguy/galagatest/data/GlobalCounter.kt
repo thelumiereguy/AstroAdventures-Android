@@ -6,12 +6,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 object GlobalCounter {
 
-    private val timer = ticker(50, 1000, Dispatchers.IO)
+    private val enemyTimer = ticker(35, 1000, Dispatchers.IO)
 
-    val timerFlow = timer.receiveAsFlow()
+    val enemyTimerFlow = enemyTimer.receiveAsFlow()
 
-    private val startsBackgroundTimer = ticker(30, 1000, Dispatchers.IO)
+    private val starsBackgroundTimer = ticker(30, 1000, Dispatchers.IO)
 
-    val startsBackgroundTimerFlow = startsBackgroundTimer.receiveAsFlow()
+    val starsBackgroundTimerFlow = starsBackgroundTimer.receiveAsFlow()
 
 }

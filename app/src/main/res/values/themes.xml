@@ -18,23 +18,13 @@
     </style>
 
 
-    <style name="Text.Headline6" parent="TextAppearance.MaterialComponents.Headline6" />
-
-    <style name="Text.Headline6.ComputerFont">
+    <style name="ButtonStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:padding">16dp</item>
         <item name="fontFamily">@font/computerpixel7</item>
+        <item name="android:textSize">18sp</item>
+<!--        <item name="android:textStyle">italic|bold</item>-->
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textColor">@color/primaryFontColor</item>
     </style>
-
-    <style name="Text.Headline5" parent="TextAppearance.MaterialComponents.Headline5" />
-
-    <style name="Text.Headline5.ComputerFont">
-        <item name="fontFamily">@font/computerpixel7</item>
-    </style>
-
-
-    <style name="Text.Headline3" parent="TextAppearance.MaterialComponents.Headline3" />
-
-    <style name="Text.Headline3.ComputerFont">
-        <item name="fontFamily">@font/computerpixel7</item>
-    </style>
-
 </resources>
