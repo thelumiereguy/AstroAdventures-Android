@@ -2,6 +2,7 @@ package com.thelumierguy.galagatest.ui.game.views.enemyShip
 
 import android.graphics.Canvas
 import android.util.Range
+import com.thelumierguy.galagatest.data.Score
 import com.thelumierguy.galagatest.ui.game.views.enemyShip.enemyshipdelegates.AlienShip
 import com.thelumierguy.galagatest.ui.game.views.enemyShip.enemyshipdelegates.CapitalShip
 import com.thelumierguy.galagatest.ui.game.views.enemyShip.enemyshipdelegates.IEnemyShip
@@ -23,6 +24,9 @@ class Enemy {
         }
     }
 
+    private val points = enemyLife * 25L
+
+
     val enemyX: Float
         get() = enemyDelegate.getPositionX()
 
@@ -34,6 +38,9 @@ class Enemy {
 
     fun onHit() {
         enemyLife--
+        if (enemyLife <= 0) {
+            Score.updateScore(points)
+        }
         enemyDelegate.onHit(enemyLife)
         isVisible = enemyLife > 0
     }
@@ -57,7 +64,8 @@ class Enemy {
     }
 
     fun checkEnemyYPosition(bulletY: Float): Boolean {
-        return Range(enemyDelegate.getPositionY() - enemyDelegate.hitBoxRadius(), enemyDelegate.getPositionY() + enemyDelegate.hitBoxRadius()).contains(bulletY) && isVisible
+        return Range(enemyDelegate.getPositionY() - enemyDelegate.hitBoxRadius(),
+            enemyDelegate.getPositionY() + enemyDelegate.hitBoxRadius()).contains(bulletY) && isVisible
     }
 
 

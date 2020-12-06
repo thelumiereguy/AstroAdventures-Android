@@ -5,11 +5,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 
-class AccelerometerManager(context: Context, onUpdateCallBack: (SensorEvent) -> Unit) {
+class AccelerometerManager(context: Context,val onUpdateCallBack: (SensorEvent) -> Unit) {
 
     private val gyroscopeSensor: Sensor by lazy {
         sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -19,15 +16,16 @@ class AccelerometerManager(context: Context, onUpdateCallBack: (SensorEvent) -> 
         context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
-    private val gyroscopeSensorListener = object : SensorEventListener {
-        override fun onSensorChanged(sensorEvent: SensorEvent) {
-            onUpdateCallBack(sensorEvent)
-        }
-
-        override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
-    }
+    private var gyroscopeSensorListener: SensorEventListener? = null
 
     fun startListening() {
+        gyroscopeSensorListener = object : SensorEventListener {
+            override fun onSensorChanged(sensorEvent: SensorEvent) {
+                onUpdateCallBack(sensorEvent)
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
+        }
         sensorManager.registerListener(
             gyroscopeSensorListener,
             gyroscopeSensor, SensorManager.SENSOR_DELAY_GAME

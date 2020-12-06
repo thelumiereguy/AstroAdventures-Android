@@ -29,6 +29,8 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
 
     var onCollisionDetector: OnCollisionDetector? = null
 
+    var enemyDetailsCallback: EnemyDetailsCallback? = null
+
     private var bulletWatcherJob: Job = Job()
 
     private val enemyList = mutableListOf(
@@ -98,6 +100,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
     private fun resetEnemies() {
         timer?.cancel()
         enemyList.clear()
+        enemyDetailsCallback?.onGameOver()
         postInvalidate()
     }
 
@@ -128,6 +131,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
                                 Log.d("Bullet", "${enemy.enemyX} ${enemy.enemyY} $bulletPosition")
                                 destroyBullet(bulletData)
                                 destroyEnemy(enemy)
+                                scanForEnemies()
                             }
                         }
 
@@ -135,6 +139,15 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
                 }
             }
 
+        }
+    }
+
+    private fun scanForEnemies() {
+        val anyVisible = enemyList.any {
+            it.areAnyVisible()
+        }
+        if (!anyVisible) {
+            enemyDetailsCallback?.onAllEliminated()
         }
     }
 
@@ -155,7 +168,6 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
             }
         }
         postInvalidate()
-        Score.updateScore(25)
     }
 
     fun removeBullet(bullet: UUID) {
@@ -177,6 +189,11 @@ fun List<Enemy>.getRangeX(): Pair<Float, Float> {
     } else {
         Pair(0F, 0F)
     }
+}
+
+interface EnemyDetailsCallback {
+    fun onAllEliminated()
+    fun onGameOver()
 }
 
 interface OnCollisionDetector {

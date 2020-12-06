@@ -12,7 +12,8 @@ class MainViewModel : ViewModel() {
     fun observeScreenState(): StateFlow<ScreenStates> = screenStateFlow
 
     fun updateUIState(screenStates: ScreenStates) {
-        screenStateFlow.value = screenStates
+        if (screenStateFlow.value != screenStates)
+            screenStateFlow.value = screenStates
     }
 }
 
@@ -21,5 +22,7 @@ sealed class ScreenStates {
     object GameMenu : ScreenStates()
     object StartGame : ScreenStates()
     object LevelComplete : ScreenStates()
+    object YouDied : ScreenStates()
+    object RanOutOfAmmo : ScreenStates()
     object GameOver : ScreenStates()
 }

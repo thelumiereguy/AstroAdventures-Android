@@ -2,23 +2,27 @@ package com.thelumierguy.galagatest.data
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlin.math.roundToInt
 
-class BulletStore {
+class BulletStore(val maxCount: Float,val onEmptyCallback: () -> Unit) {
 
-    private val bulletCountFlow = MutableStateFlow(0L)
-
-    fun scoreFlow(): StateFlow<Long> = bulletCountFlow
-
-    fun updateScore(score: Long) {
-        bulletCountFlow.value += score
+    companion object {
+        const val HALF_REFILL = 100F
     }
 
-    fun resetScore() {
-        bulletCountFlow.value = 0L
+    private val bulletCountFlow = MutableStateFlow(HALF_REFILL.roundToInt())
+
+    fun bulletCountFlow(): StateFlow<Int> = bulletCountFlow
+
+    fun updateInventory() {
+        bulletCountFlow.value--
+        if (bulletCountFlow.value == 0) {
+            onEmptyCallback()
+        }
     }
 
-    fun saveScore() {
-
-    }
+//    fun refillInventory(resetCount: Int) {
+//        bulletCountFlow.value = resetCount
+//    }
 
 }

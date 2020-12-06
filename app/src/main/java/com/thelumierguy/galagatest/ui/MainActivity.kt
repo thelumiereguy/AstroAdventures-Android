@@ -9,13 +9,14 @@ import androidx.transition.TransitionManager
 import com.thelumierguy.galagatest.databinding.*
 import com.thelumierguy.galagatest.ui.game.views.bullets.BulletCoordinates
 import com.thelumierguy.galagatest.ui.game.views.bullets.BulletTracker
+import com.thelumierguy.galagatest.ui.game.views.enemyShip.EnemyDetailsCallback
 import com.thelumierguy.galagatest.ui.game.views.enemyShip.OnCollisionDetector
 import com.thelumierguy.galagatest.utils.MusicManager
 import com.thelumierguy.galagatest.utils.goFullScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
 
-class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector {
+class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, EnemyDetailsCallback {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -24,25 +25,37 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector {
     }
 
     val initScene by lazy {
-        GameInitScreenBinding.inflate(layoutInflater,binding.root,false).let {
+        GameInitScreenBinding.inflate(layoutInflater, binding.root, false).let {
+            SceneContainer(it, Scene(binding.rootContainer, it.root))
+        }
+    }
+
+    val levelCompleteScene by lazy {
+        LevelCompleteSceneBinding.inflate(layoutInflater, binding.root, false).let {
             SceneContainer(it, Scene(binding.rootContainer, it.root))
         }
     }
 
     val gameMenuScene by lazy {
-        MainMenuSceneBinding.inflate(layoutInflater,binding.root,false).let {
+        MainMenuSceneBinding.inflate(layoutInflater, binding.root, false).let {
             SceneContainer(it, Scene(binding.rootContainer, it.root))
         }
     }
 
-    val startGameScene by lazy {
-        GameSceneBinding.inflate(layoutInflater,binding.root,false).let {
+    val youDiedScene by lazy {
+        YouDiedSceneBinding.inflate(layoutInflater, binding.root, false).let {
+            SceneContainer(it, Scene(binding.rootContainer, it.root))
+        }
+    }
+
+    val gameScene by lazy {
+        GameSceneBinding.inflate(layoutInflater, binding.root, false).let {
             SceneContainer(it, Scene(binding.rootContainer, it.root))
         }
     }
 
     val gameOverScene by lazy {
-        GameOverSceneBinding.inflate(layoutInflater,binding.root,false).let {
+        GameOverSceneBinding.inflate(layoutInflater, binding.root, false).let {
             SceneContainer(it, Scene(binding.rootContainer, it.root))
         }
     }
@@ -70,15 +83,15 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector {
         bulletId: UUID,
         bulletPosition: MutableStateFlow<BulletCoordinates>,
     ) {
-        startGameScene.binding.enemiesView.checkCollision(bulletId, bulletPosition)
+        gameScene.binding.enemiesView.checkCollision(bulletId, bulletPosition)
     }
 
     override fun cancelTracking(bulletId: UUID) {
-        startGameScene.binding.enemiesView.removeBullet(bulletId)
+        gameScene.binding.enemiesView.removeBullet(bulletId)
     }
 
     override fun onCollision(index: Int) {
-        startGameScene.binding.bulletView.destroyBullet(index)
+        gameScene.binding.bulletView.destroyBullet(index)
     }
 
 
@@ -90,5 +103,13 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector {
     fun transitionTo(toScene: Scene, transition: Transition) {
         transitionManager.setTransition(toScene, transition)
         transitionManager.transitionTo(toScene)
+    }
+
+    override fun onAllEliminated() {
+        viewModel.updateUIState(ScreenStates.LevelComplete)
+    }
+
+    override fun onGameOver() {
+        viewModel.updateUIState(ScreenStates.YouDied)
     }
 }

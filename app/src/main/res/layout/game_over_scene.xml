@@ -1,45 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.thelumierguy.galagatest.ui.menu.views.background.StarsBackgroundView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:keepScreenOn="true"
+    android:background="@color/backgroundColor"
     tools:context=".ui.MainActivity">
 
-    <com.thelumierguy.galagatest.ui.game.views.bullets.BulletView
-        android:id="@+id/bulletView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/spaceShipView"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.thelumierguy.galagatest.ui.game.views.enemyShip.EnemyClusterView
-        android:id="@+id/enemiesView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
+    <TextView
+        android:id="@+id/died_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.92" />
-
-    <com.thelumierguy.galagatest.ui.game.views.playership.SpaceShipView
-        android:id="@+id/spaceShipView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="32dp"
+        android:letterSpacing="0.1"
+        android:text="@string/game_over"
+        android:textAlignment="center"
+        android:textColor="@color/secondaryFontColor"
+        android:textSize="48sp"
+        app:fontFamily="@font/computerpixel7"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHeight_percent="0.12"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.26999998" />
 
 
-</com.thelumierguy.galagatest.ui.menu.views.background.StarsBackgroundView>
+    <TextView
+        android:id="@+id/scoreView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:letterSpacing="0.1"
+        android:text="@string/score_text"
+        android:textAlignment="center"
+        android:textColor="@color/primaryFontColor"
+        android:textSize="24sp"
+        app:fontFamily="@font/computerpixel7"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/died_text"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.thelumierguy.galagatest.ui.menu.views.buttons.MenuButtonView
+        android:id="@+id/btn_try_again"
+        style="@style/ButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/try_again"
+        app:layout_constraintBottom_toTopOf="@id/btn_main_menu"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scoreView"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintWidth_percent="0.5" />
+
+
+    <com.thelumierguy.galagatest.ui.menu.views.buttons.MenuButtonView
+        android:id="@+id/btn_main_menu"
+        style="@style/ButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/back_to_main_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_try_again"
+        app:layout_constraintWidth_percent="0.5" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
