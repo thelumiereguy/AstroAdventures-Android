@@ -13,4 +13,6 @@
     <string name="back_to_main_menu">Back to Main Menu</string>
     <string name="enemyBreached">The Space pirates have breached your planet\'s atmosphere!</string>
     <string name="conserveAmmo">Supplies are running low. Try Conserving your Ammo \n \nPS : </string>
+    <string name="level_complete">Level %1$d Complete</string>
+    <string name="text_continue">Continue</string>
 </resources>

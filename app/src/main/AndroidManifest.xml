@@ -9,6 +9,7 @@
         android:name="android.hardware.sensor.gyroscope"
         android:required="true" />
 
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"

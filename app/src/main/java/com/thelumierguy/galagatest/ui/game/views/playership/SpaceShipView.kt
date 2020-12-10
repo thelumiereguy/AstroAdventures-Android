@@ -5,10 +5,10 @@ import android.graphics.*
 import android.graphics.drawable.PictureDrawable
 import android.hardware.SensorEvent
 import android.util.AttributeSet
-import com.thelumierguy.galagatest.databinding.GameSceneBinding
 import com.thelumierguy.galagatest.ui.base.BaseCustomView
 import com.thelumierguy.galagatest.utils.AccelerometerManager
 import com.thelumierguy.galagatest.utils.lowPass
+import com.thelumierguy.galagatest.utils.map
 import kotlin.math.roundToInt
 
 
@@ -91,23 +91,15 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         postInvalidate()
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (!isInEditMode) {
-            addAccelerometerListener()
-            accelerometerManager?.startListening()
-        }
-    }
-
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         accelerometerManager?.stopListening()
     }
 
     override fun onDraw(canvas: Canvas?) {
-//        if (isInEditMode) {
-//            return
-//        }
+        if (isInEditMode) {
+            return
+        }
         canvas?.let {
             pictureDrawable.bounds = displayRect
             pictureDrawable.draw(canvas)
@@ -254,14 +246,14 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
 
     fun getShipY(): Float = bodyTopPoint
 
-    fun processSensorEvents(sensorEvent: SensorEvent) {
+    private fun processSensorEvents(sensorEvent: SensorEvent) {
         lowPass(sensorEvent.values, gravityValue)
-        magnifyValue()
         processValues()
     }
 
     private fun processValues() {
-//        Log.d("Ship", "$rotationValue")
+        translationXValue = map(gravityValue[0], 6F, -6F, -wingWidth, measuredWidth + wingWidth)
+//        Log.d("Ship", "$translationXValue")
         if (translationXValue > wingWidth && translationXValue < measuredWidth - wingWidth) {
             currentShipPosition = translationXValue
             displayRect.set(
@@ -274,14 +266,15 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         }
     }
 
-    private fun magnifyValue() {
-        translationXValue = multiplicationFactor * gravityValue[0]
-    }
-
     private fun addAccelerometerListener() {
         accelerometerManager = AccelerometerManager(context.applicationContext) { sensorEvent ->
             processSensorEvents(sensorEvent)
         }
+    }
+
+    fun startGame() {
+        addAccelerometerListener()
+        accelerometerManager?.startListening()
     }
 
 }

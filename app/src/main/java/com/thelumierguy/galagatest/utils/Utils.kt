@@ -3,16 +3,24 @@ package com.thelumierguy.galagatest.utils
 import android.os.Build
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.transition.Scene
-import androidx.viewbinding.ViewBinding
 
-const val ALPHA = 0.05F
+const val ALPHA = 0.97F
 
 fun lowPass(
     input: FloatArray,
     output: FloatArray,
 ) {
-    output[0] = ALPHA * input[0] + output[0] * 1.0f - ALPHA
+    output[0] = ALPHA * output[0] + (1 - ALPHA) * input[0]
+}
+
+fun map(
+    value: Float,
+    in_min: Float,
+    in_max: Float,
+    out_min: Float,
+    out_max: Float,
+): Float {
+    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 }
 
 fun AppCompatActivity.goFullScreen() {

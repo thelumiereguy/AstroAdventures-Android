@@ -4,9 +4,12 @@ import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.util.Log
+import android.view.HapticFeedbackConstants
+import com.thelumierguy.galagatest.data.BulletStore
 import com.thelumierguy.galagatest.data.GlobalCounter.enemyTimerFlow
 import com.thelumierguy.galagatest.ui.base.BaseCustomView
 import com.thelumierguy.galagatest.ui.game.views.bullets.BulletCoordinates
+import com.thelumierguy.galagatest.utils.HapticService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.*
@@ -24,6 +27,10 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
 
         var speed = 2F
     }
+
+    lateinit var bulletStore: BulletStore
+
+    val hapticService by lazy { HapticService(context) }
 
     var onCollisionDetector: OnCollisionDetector? = null
 
@@ -66,15 +73,12 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
                 )
             )
         }
-
-        startTranslating()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         translateJob.cancel()
     }
-
 
 
     /**
@@ -107,6 +111,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
     private fun resetEnemies() {
         enemyList.clear()
         enemyDetailsCallback?.onGameOver()
+        hapticService.performHapticFeedback(320)
         postInvalidate()
     }
 
@@ -153,7 +158,8 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
             it.areAnyVisible()
         }
         if (!anyVisible) {
-            enemyDetailsCallback?.onAllEliminated()
+            hapticService.performHapticFeedback(320)
+            enemyDetailsCallback?.onAllEliminated(bulletStore.getAmmoCount())
         }
     }
 
@@ -173,6 +179,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
                 it.onHit()
             }
         }
+        hapticService.performHapticFeedback(64, 48)
         postInvalidate()
     }
 
@@ -184,6 +191,10 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
                 iterator.remove()
             }
         }
+    }
+
+    fun startGame() {
+        startTranslating()
     }
 
 }
@@ -198,7 +209,7 @@ fun List<Enemy>.getRangeX(): Pair<Float, Float> {
 }
 
 interface EnemyDetailsCallback {
-    fun onAllEliminated()
+    fun onAllEliminated(ammoCount: Int)
     fun onGameOver()
 }
 

@@ -11,7 +11,7 @@ import com.thelumierguy.galagatest.ui.game.views.bullets.BulletCoordinates
 import com.thelumierguy.galagatest.ui.game.views.bullets.BulletTracker
 import com.thelumierguy.galagatest.ui.game.views.enemyShip.EnemyDetailsCallback
 import com.thelumierguy.galagatest.ui.game.views.enemyShip.OnCollisionDetector
-import com.thelumierguy.galagatest.utils.MusicManager
+import com.thelumierguy.galagatest.utils.BackgroundMusicManager
 import com.thelumierguy.galagatest.utils.goFullScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
@@ -34,7 +34,16 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
 
     lateinit var gameScene: SceneContainer<GameSceneBinding>
 
+    lateinit var levelStartScene: SceneContainer<LevelStartSceneBinding>
+
     lateinit var gameOverScene: SceneContainer<GameOverSceneBinding>
+
+    val backgroundMusicManager  by lazy {
+        BackgroundMusicManager(applicationContext).apply {
+            lifecycle.addObserver(this)
+        }
+    }
+
 
     private val transitionManager by lazy {
         TransitionManager()
@@ -47,7 +56,6 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
         setContentView(binding.root)
         initScenes()
         observeScreenStates()
-        startMusic()
     }
 
     private fun initScenes() {
@@ -66,6 +74,11 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
                 SceneContainer(it, Scene(binding.rootContainer, it.root))
             }
 
+        levelStartScene =
+            LevelStartSceneBinding.inflate(layoutInflater, binding.root, false).let {
+                SceneContainer(it, Scene(binding.rootContainer, it.root))
+            }
+
         youDiedScene =
             YouDiedSceneBinding.inflate(layoutInflater, binding.root, false).let {
                 SceneContainer(it, Scene(binding.rootContainer, it.root))
@@ -77,12 +90,6 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
             GameOverSceneBinding.inflate(layoutInflater, binding.root, false).let {
                 SceneContainer(it, Scene(binding.rootContainer, it.root))
             }
-    }
-
-    private fun startMusic() {
-        MusicManager(applicationContext).run {
-            lifecycle.addObserver(this)
-        }
     }
 
     override fun initBulletTracking(
@@ -100,8 +107,8 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
         gameScene.binding.bulletView.destroyBullet(index)
     }
 
-    override fun onAllEliminated() {
-        viewModel.updateUIState(ScreenStates.LevelComplete)
+    override fun onAllEliminated(ammoCount: Int) {
+        viewModel.updateUIState(ScreenStates.LevelComplete(ammoCount))
     }
 
     fun startGameScene() {

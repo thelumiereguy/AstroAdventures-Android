@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.MainActivity">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/success_text"
@@ -12,36 +11,170 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:letterSpacing="0.1"
-        android:text="Level Complete"
+        android:text="@string/level_complete"
         android:textAlignment="center"
         android:textColor="@color/bulletColor"
         android:textSize="48sp"
         app:fontFamily="@font/computerpixel7"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/scoreBoard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.17000002"
+        app:layout_constraintVertical_bias="0.69"
         app:layout_constraintVertical_chainStyle="packed" />
 
 
-    <TextView
-        android:id="@+id/scoreView"
-        android:layout_width="wrap_content"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/scoreBoard"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.4"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="@color/shipShadowColor"
+        app:strokeWidth="2dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="24dp">
+
+            <TextView
+                android:id="@+id/scoreView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.1"
+                android:text="Score"
+                android:textAlignment="center"
+                android:textColor="@color/primaryFontColor"
+                android:textSize="24sp"
+                android:textStyle="bold|italic"
+                app:fontFamily="@font/computerpixel7"
+                app:layout_constraintBottom_toTopOf="@id/bulletCountView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/bulletCountView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.1"
+                android:text="Ammo Bonus"
+                android:textAlignment="center"
+                android:textColor="@color/primaryFontColor"
+                android:textSize="24sp"
+                android:textStyle="bold|italic"
+                app:fontFamily="@font/computerpixel7"
+                app:layout_constraintBottom_toTopOf="@id/totalScoreView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/scoreView" />
+
+
+            <TextView
+                android:id="@+id/totalScoreView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.1"
+                android:text="Total"
+                android:textAlignment="center"
+                android:textColor="@color/primaryFontColor"
+                android:textSize="24sp"
+                android:textStyle="bold|italic"
+                app:fontFamily="@font/computerpixel7"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bulletCountView" />
+
+
+            <TextView
+                android:id="@+id/scoreViewValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.1"
+                android:textAlignment="center"
+                android:textColor="@color/secondaryFontColor"
+                android:textSize="24sp"
+                app:fontFamily="@font/computerpixel7"
+                app:layout_constraintBottom_toTopOf="@id/bulletCountValueView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="200" />
+
+
+            <com.thelumierguy.galagatest.ui.base.AnimatedTextView
+                android:id="@+id/bulletCountValueView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.1"
+                android:textAlignment="center"
+                android:textColor="@color/secondaryFontColor"
+                android:textSize="24sp"
+                app:fontFamily="@font/computerpixel7"
+                app:layout_constraintBottom_toTopOf="@id/totalScoreValueView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/scoreViewValue"
+                tools:text="200" />
+
+
+            <com.thelumierguy.galagatest.ui.base.AnimatedTextView
+                android:id="@+id/totalScoreValueView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.1"
+                android:textAlignment="center"
+                android:textColor="@color/secondaryFontColor"
+                android:textSize="24sp"
+                app:fontFamily="@font/computerpixel7"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bulletCountValueView"
+                tools:text="400" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <com.thelumierguy.galagatest.ui.menu.views.buttons.MenuButtonView
+        android:id="@+id/btn_continue"
+        style="@style/ButtonStyle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:letterSpacing="0.1"
-        android:text="@string/score_text"
-        android:textAlignment="center"
-        android:textColor="@color/primaryFontColor"
-        android:textSize="24sp"
-        app:fontFamily="@font/computerpixel7"
+        android:text="@string/text_continue"
+        app:layout_constraintBottom_toTopOf="@id/btn_main_menu"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scoreBoard"
+        app:layout_constraintVertical_bias="0.39"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintWidth_percent="0.5" />
+
+
+    <com.thelumierguy.galagatest.ui.menu.views.buttons.MenuButtonView
+        android:id="@+id/btn_main_menu"
+        style="@style/ButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/back_to_main_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/btn_continue"
+        app:layout_constraintWidth_percent="0.5" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

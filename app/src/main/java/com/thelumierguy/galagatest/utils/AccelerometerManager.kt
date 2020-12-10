@@ -6,7 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 
-class AccelerometerManager(context: Context,val onUpdateCallBack: (SensorEvent) -> Unit) {
+class AccelerometerManager(context: Context, val onUpdateCallBack: (SensorEvent) -> Unit) {
 
     private val gyroscopeSensor: Sensor by lazy {
         sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)

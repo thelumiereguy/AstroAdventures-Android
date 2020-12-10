@@ -24,8 +24,9 @@ class MainViewModel : ViewModel() {
 sealed class ScreenStates {
     object AppInit : ScreenStates()
     object GameMenu : ScreenStates()
+    object LevelStart : ScreenStates()
     object StartGame : ScreenStates()
-    object LevelComplete : ScreenStates()
+    data class LevelComplete(val bulletCount:Int) : ScreenStates()
     object YouDied : ScreenStates()
     object RanOutOfAmmo : ScreenStates()
     object GameOver : ScreenStates()

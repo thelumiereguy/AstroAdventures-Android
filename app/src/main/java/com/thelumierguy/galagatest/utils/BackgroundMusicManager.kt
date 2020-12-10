@@ -1,20 +1,19 @@
 package com.thelumierguy.galagatest.utils
 
 import android.content.Context
-import android.hardware.SensorManager
 import android.media.MediaPlayer
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.thelumierguy.galagatest.R
 
-class MusicManager(val context: Context) : LifecycleObserver {
+class BackgroundMusicManager(val context: Context) : LifecycleObserver {
 
     private var mediaPlayer: MediaPlayer? = null
 
 
     private fun startMusic() {
-        mediaPlayer = MediaPlayer.create(context, R.raw.music)
+        mediaPlayer = MediaPlayer.create(context, R.raw.astro_adventures_menu)
         mediaPlayer?.setOnPreparedListener {
             it.start()
         }
@@ -23,13 +22,13 @@ class MusicManager(val context: Context) : LifecycleObserver {
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun startListening() {
-        startMusic()
+    fun startPlaying() {
+        if (mediaPlayer?.isPlaying != true)
+            startMusic()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun stopListening() {
+    fun stopPlaying() {
         mediaPlayer?.stop()
     }
 

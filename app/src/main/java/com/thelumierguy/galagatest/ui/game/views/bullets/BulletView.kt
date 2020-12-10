@@ -7,11 +7,14 @@ import android.util.AttributeSet
 import androidx.core.content.res.ResourcesCompat
 import com.thelumierguy.galagatest.R
 import com.thelumierguy.galagatest.ui.base.BaseCustomView
+import com.thelumierguy.galagatest.utils.SoundManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
 
 class BulletView(context: Context, attributeSet: AttributeSet? = null) :
     BaseCustomView(context, attributeSet) {
+
+    private val fireSoundManager by lazy { SoundManager(R.raw.player_bullet_sound, context) }
 
     var bulletTracker: BulletTracker? = null
 
@@ -39,6 +42,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
     var shipX = 0F
         set(value) {
             field = value
+            fireSoundManager.play()
             bulletStateList.add(Bullet(shipX))
             invalidate()
         }
@@ -121,6 +125,16 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
     }
 
     override fun hasOverlappingRendering(): Boolean = false
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        fireSoundManager.init()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        fireSoundManager.release()
+    }
 }
 
 interface BulletTracker {
