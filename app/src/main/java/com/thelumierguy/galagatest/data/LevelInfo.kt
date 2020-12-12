@@ -7,4 +7,8 @@ object LevelInfo {
     fun resetLevel() {
         level = 1
     }
+
+    fun increment() {
+        level++
+    }
 }

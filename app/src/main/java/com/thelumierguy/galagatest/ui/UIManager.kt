@@ -74,6 +74,7 @@ fun MainActivity.observeScreenStates() {
                         }
                         gameMenuScene.binding.btnStart.setOnClickListener {
                             backgroundMusicManager.stopPlaying()
+                            LevelInfo.resetLevel()
                             viewModel.updateUIState(ScreenStates.LevelStart)
                         }
                         gameMenuScene.binding.btnViewScores.setOnClickListener {
@@ -103,7 +104,7 @@ fun MainActivity.observeScreenStates() {
                             }
                         })
                     }
-                    ScreenStates.StartGame -> {
+                    is ScreenStates.StartGame -> {
                         startGameScene()
                         gameScene.binding.apply {
                             val bulletStore = BulletStore(BulletStore.HALF_REFILL)
@@ -193,13 +194,29 @@ fun MainActivity.observeScreenStates() {
 
 
                                 btnContinue.setOnClickListener {
-                                    viewModel.updateUIState(ScreenStates.LevelStart)
+                                    LevelInfo.increment()
+                                    viewModel.updateUIState(ScreenStates.LevelStartWarp)
                                 }
                             }
                         }
                     }
 
-
+                    ScreenStates.LevelStartWarp -> {
+                        transitionFromTo(levelCompleteScene.scene,
+                            levelStartWarpScene.scene,
+                            Fade(Fade.MODE_IN).apply {
+                                duration = 200
+                            })
+                        binding.root.setTrails(true)
+                        levelStartWarpScene.binding.spaceShipView.animate()
+                            .translationY(-binding.root.measuredHeight.toFloat())
+                            .withEndAction {
+                                binding.root.setTrails(false)
+                                viewModel.updateUIState(ScreenStates.LevelStart)
+                            }
+                            .setDuration(4000L)
+                            .start()
+                    }
                     ScreenStates.GameOver -> {
                         gameOverScene.binding.apply {
                             scoreView.text =
@@ -219,6 +236,7 @@ fun MainActivity.observeScreenStates() {
 
 
                             btnTryAgain.setOnClickListener {
+                                LevelInfo.resetLevel()
                                 viewModel.updateUIState(ScreenStates.LevelStart)
                             }
                         }

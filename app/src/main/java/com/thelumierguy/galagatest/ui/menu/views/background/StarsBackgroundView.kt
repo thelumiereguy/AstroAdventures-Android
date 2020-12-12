@@ -2,6 +2,7 @@ package com.thelumierguy.galagatest.ui.menu.views.background
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.widget.FrameLayout
@@ -18,6 +19,7 @@ import kotlin.random.Random
 class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) :
     FrameLayout(context, attributeSet) {
 
+    private var enableWarp: Boolean = false
 
     private val lifeCycleOwner by lazy { CustomLifeCycleOwner() }
 
@@ -47,6 +49,13 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
         }
     }
 
+    private val trailsList by lazy {
+        List(200) {
+            Trails(measuredHeight, measuredWidth)
+        }
+    }
+
+
     init {
         setBackgroundColor(ResourcesCompat.getColor(context.resources,
             R.color.backgroundColor,
@@ -54,12 +63,36 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
         setWillNotDraw(false)
     }
 
+    fun setTrails(enableWarp: Boolean) {
+        this.enableWarp = enableWarp
+        resetTrails()
+    }
+
+    private fun resetTrails() {
+        if(!enableWarp){
+            val trailsIterator = trailsList.iterator()
+            while (trailsIterator.hasNext()) {
+                val trails = trailsIterator.next()
+                trails.reset()
+            }
+        }
+    }
+
     private fun startObservingTimer() {
         GlobalCounter.starsBackgroundTimerFlow.onEach {
-            val starIterator = starsList.iterator()
-            while (starIterator.hasNext()) {
-                val star = starIterator.next()
-                star.translate()
+            if (enableWarp) {
+                val trailsIterator = trailsList.iterator()
+                while (trailsIterator.hasNext()) {
+                    val trails = trailsIterator.next()
+                    trails.translate()
+                }
+
+            } else {
+                val starIterator = starsList.iterator()
+                while (starIterator.hasNext()) {
+                    val star = starIterator.next()
+                    star.translate()
+                }
             }
             invalidate()
         }.launchIn(lifeCycleOwner.customViewLifeCycleScope)
@@ -76,21 +109,79 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
             return
         }
         canvas?.let {
-            starsList.forEach {
-                lifeCycleOwner.customViewLifeCycleScope.launch {
-                    it.draw(canvas, starPaint)
+            if (enableWarp) {
+                trailsList.forEach {
+                    lifeCycleOwner.customViewLifeCycleScope.launch {
+                        it.draw(canvas)
+                    }
+                }
+            } else {
+                starsList.forEach {
+                    lifeCycleOwner.customViewLifeCycleScope.launch {
+                        it.draw(canvas, starPaint)
+                    }
                 }
             }
+
+        }
+    }
+
+    class Trails(private val height: Int, width: Int) {
+
+        private var xCor = Random.nextInt(0, width).toFloat()
+        private var yCor = Random.nextInt(0, height).toFloat()
+
+        private var trailHeight = height * 0.05F
+
+        private var defaultTrailHeight = height * 0.05F
+
+        private val trailsColor by lazy {
+            Color.rgb(
+                Random.nextInt(0, 255),
+                Random.nextInt(0, 255),
+                Random.nextInt(0, 255)
+            )
+        }
+
+        private val starTrailsPaint by lazy {
+            Paint().apply {
+                color = trailsColor
+                style = Paint.Style.STROKE
+                strokeWidth = 6F
+                strokeCap = Paint.Cap.ROUND
+            }
+        }
+
+        fun draw(canvas: Canvas) {
+            canvas.drawLine(xCor, yCor, xCor, yCor + trailHeight, starTrailsPaint)
+        }
+
+        fun translate() {
+            yCor += trailHeight
+            slowDown()
+            if (yCor > height) {
+                yCor = Random.nextInt(-height, 0).toFloat()
+            }
+        }
+
+        private fun slowDown() {
+            if (trailHeight > 1)
+                trailHeight -= 1
+        }
+
+        fun reset() {
+            trailHeight = defaultTrailHeight
         }
     }
 
     class Twinkles(private val height: Int, width: Int) {
 
-        var xCor = Random.nextInt(0, width).toFloat()
-        var yCor = Random.nextInt(0, height).toFloat()
+        private var xCor = Random.nextInt(0, width).toFloat()
+        private var yCor = Random.nextInt(0, height).toFloat()
         private val radius by lazy {
             Random.nextInt(1, 7).toFloat()
         }
+
 
         private val speed by lazy {
             when {
@@ -106,7 +197,6 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
         fun draw(canvas: Canvas, starPaint: Paint) {
             starPaint.alpha = 255
             canvas.drawCircle(xCor, yCor, radius, starPaint)
-
             if (radius < 3) {
                 starPaint.alpha = 128
                 canvas.drawCircle(xCor + diameter, yCor, radius, starPaint)

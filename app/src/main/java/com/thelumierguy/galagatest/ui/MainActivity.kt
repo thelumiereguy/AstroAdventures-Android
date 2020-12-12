@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.transition.Scene
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
@@ -30,6 +31,8 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
     lateinit var initScene: SceneContainer<GameInitScreenBinding>
 
     lateinit var levelCompleteScene: SceneContainer<LevelCompleteSceneBinding>
+
+    lateinit var levelStartWarpScene: SceneContainer<LevelStartWarpSceneBinding>
 
     lateinit var gameMenuScene: SceneContainer<MainMenuSceneBinding>
 
@@ -118,6 +121,12 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
     }
 
     override fun onAllEliminated(ammoCount: Int) {
+        lifecycleScope.launchWhenCreated {
+            showLevelCompleteScene(ammoCount)
+        }
+    }
+
+    private fun showLevelCompleteScene(ammoCount: Int) {
         viewModel.updateUIState(ScreenStates.LevelComplete(ammoCount))
     }
 
@@ -129,6 +138,11 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
         binding.rootContainer.removeAllViews()
         levelCompleteScene =
             LevelCompleteSceneBinding.inflate(layoutInflater, binding.root, false).let {
+                SceneContainer(it, Scene(binding.rootContainer, it.root))
+            }
+
+        levelStartWarpScene =
+            LevelStartWarpSceneBinding.inflate(layoutInflater, binding.root, false).let {
                 SceneContainer(it, Scene(binding.rootContainer, it.root))
             }
 
