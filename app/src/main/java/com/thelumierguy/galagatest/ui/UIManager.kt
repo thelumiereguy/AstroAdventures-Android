@@ -3,19 +3,20 @@ package com.thelumierguy.galagatest.ui
 import android.view.Gravity
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.LinearInterpolator
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.lifecycleScope
-import androidx.transition.Fade
-import androidx.transition.Scene
-import androidx.transition.Slide
+import androidx.transition.*
 import androidx.transition.TransitionSet.ORDERING_SEQUENTIAL
 import androidx.viewbinding.ViewBinding
 import com.thelumierguy.galagatest.R
 import com.thelumierguy.galagatest.data.BulletStore
 import com.thelumierguy.galagatest.data.BulletStore.Companion.getAmountScore
 import com.thelumierguy.galagatest.data.LevelInfo
-import com.thelumierguy.galagatest.data.Score.resetScore
+import com.thelumierguy.galagatest.data.PlayerHealthInfo
+import com.thelumierguy.galagatest.data.Score
 import com.thelumierguy.galagatest.data.Score.scoreFlow
 import com.thelumierguy.galagatest.databinding.GameSceneBinding
+import com.thelumierguy.galagatest.ui.game.views.bullets.BulletView
 import com.thelumierguy.galagatest.utils.addTransition
 import com.thelumierguy.galagatest.utils.onEnd
 import com.thelumierguy.galagatest.utils.transitionSet
@@ -83,6 +84,13 @@ fun MainActivity.observeScreenStates() {
                         }
                     }
                     ScreenStates.LevelStart -> {
+                        levelStartScene.binding.timerView.text = ""
+                        levelStartScene.binding.levelStartText.text =
+                            getString(R.string.level_start, LevelInfo.level)
+                        if (LevelInfo.level == 1) {
+                            Score.resetScore()
+                            PlayerHealthInfo.resetHealth()
+                        }
                         transitionTo(levelStartScene.scene, Fade(Fade.MODE_IN).apply {
                             onEnd {
                                 lifecycleScope.launchWhenCreated {
@@ -96,13 +104,16 @@ fun MainActivity.observeScreenStates() {
                         })
                     }
                     ScreenStates.StartGame -> {
-                        resetScore()
                         startGameScene()
                         gameScene.binding.apply {
                             val bulletStore = BulletStore(BulletStore.HALF_REFILL)
                             bulletView.bulletTracker = this@observeScreenStates
+                            healthView.onHealthEmpty = {
+                                viewModel.updateUIState(ScreenStates.YouDied)
+                            }
                             enemiesView.enemyDetailsCallback = this@observeScreenStates
                             enemiesView.onCollisionDetector = this@observeScreenStates
+                            spaceShipView.onCollisionDetector = this@observeScreenStates
                             enemiesView.bulletStore = bulletStore
 
                             lifecycleScope.launchWhenCreated {
@@ -134,8 +145,9 @@ fun MainActivity.observeScreenStates() {
                                     bulletView.setOnClickListener {
                                         if (bulletStore.getAmmoCount() != 0) {
                                             bulletStore.updateInventory()
-                                            bulletView.shipY = spaceShipView.getShipY()
-                                            bulletView.shipX = spaceShipView.getShipX()
+                                            bulletView.fire(spaceShipView.getShipX(),
+                                                spaceShipView.getShipY(),
+                                                BulletView.BulletSender.PLAYER)
                                         } else {
                                             viewModel.updateUIState(ScreenStates.RanOutOfAmmo)
                                         }
@@ -147,31 +159,44 @@ fun MainActivity.observeScreenStates() {
 
 
                     is ScreenStates.LevelComplete -> {
-                        levelCompleteScene.binding.apply {
-                            successText.text = getString(R.string.level_complete, LevelInfo.level)
-                            scoreViewValue.text = scoreFlow().value.toString()
-                            lifecycleScope.launchWhenCreated {
-                                delay(800L)
-                                bulletCountValueView.addNewValue(getAmountScore(it.bulletCount).toFloat()) {
-                                    totalScoreValueView.addNewValue(scoreFlow().value.toFloat() + getAmountScore(
-                                        it.bulletCount))
-                                }
-                            }
-
-                            btnMainMenu.setOnClickListener {
-                                viewModel.updateUIState(ScreenStates.GameMenu)
-                            }
-
-
-                            btnContinue.setOnClickListener {
-                                viewModel.updateUIState(ScreenStates.LevelStart)
-                            }
-                        }
                         transitionFromTo(gameScene.scene,
                             levelCompleteScene.scene,
                             Fade(Fade.MODE_IN).apply {
                                 duration = 700
                             })
+
+                        levelCompleteScene.binding.apply {
+                            successText.text = getString(R.string.level_complete, LevelInfo.level)
+                            scoreViewValue.text = scoreFlow().value.toString()
+
+                            lifecycleScope.launchWhenCreated {
+                                delay(1500L)
+                                val constraint2 = ConstraintSet()
+                                constraint2.clone(root.context,
+                                    R.layout.level_complete_scoreboard_scene)
+
+                                TransitionManager.beginDelayedTransition(root)
+                                constraint2.applyTo(root)
+
+
+                                lifecycleScope.launchWhenCreated {
+                                    delay(800L)
+                                    bulletCountValueView.addNewValue(getAmountScore(it.bulletCount).toFloat()) {
+                                        totalScoreValueView.addNewValue(scoreFlow().value.toFloat() + getAmountScore(
+                                            it.bulletCount))
+                                    }
+                                }
+
+                                btnMainMenu.setOnClickListener {
+                                    viewModel.updateUIState(ScreenStates.GameMenu)
+                                }
+
+
+                                btnContinue.setOnClickListener {
+                                    viewModel.updateUIState(ScreenStates.LevelStart)
+                                }
+                            }
+                        }
                     }
 
 
@@ -214,12 +239,14 @@ fun MainActivity.observeScreenStates() {
                                 addTarget(youDiedScene.binding.diedText)
                                 duration = 1600L
                             })
-                        lifecycleScope.launchWhenCreated {
-                            delay(2000L)
-                            viewModel.updateUIState(ScreenStates.GameOver)
-                        }
+                        youDiedScene.binding.diedText.animate().alpha(1F).scaleX(1.5F).scaleY(1.5F)
+                            .setDuration(2200).withEndAction {
+                                lifecycleScope.launchWhenCreated {
+                                    delay(2000L)
+                                    viewModel.updateUIState(ScreenStates.GameOver)
+                                }
+                            }.start()
                     }
-
                     ScreenStates.RanOutOfAmmo -> {
                         viewModel.updateUIState(ScreenStates.GameOver)
                     }

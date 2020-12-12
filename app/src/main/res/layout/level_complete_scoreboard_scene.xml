@@ -16,21 +16,21 @@
         android:textColor="@color/bulletColor"
         android:textSize="48sp"
         app:fontFamily="@font/computerpixel7"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/scoreBoard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.69"
         app:layout_constraintVertical_chainStyle="packed" />
 
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/scoreBoard_group"
         android:layout_width="wrap_content"
-        android:visibility="invisible"
         android:layout_height="wrap_content"
+        android:visibility="visible"
         app:constraint_referenced_ids="scoreBoard,btn_main_menu,btn_continue" />
-
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/scoreBoard"

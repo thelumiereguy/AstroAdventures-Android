@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
+
 class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) :
     FrameLayout(context, attributeSet) {
 

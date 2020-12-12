@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.util.Log
-import android.view.HapticFeedbackConstants
 import com.thelumierguy.galagatest.data.BulletStore
 import com.thelumierguy.galagatest.data.GlobalCounter.enemyTimerFlow
 import com.thelumierguy.galagatest.ui.base.BaseCustomView
@@ -15,6 +14,7 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.random.Random
 
 
 class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
@@ -30,7 +30,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
 
     lateinit var bulletStore: BulletStore
 
-    val hapticService by lazy { HapticService(context) }
+    private val hapticService by lazy { HapticService(context) }
 
     var onCollisionDetector: OnCollisionDetector? = null
 
@@ -95,9 +95,24 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
                     }
                     if (enemyList.isNotEmpty()) {
                         translateEnemy(System.currentTimeMillis())
+                        fireCanon()
                         invalidate()
                     }
                 }
+            }
+        }
+    }
+
+    private fun fireCanon() {
+        if (System.currentTimeMillis() % 30 == 0L) {
+            val enemyList: List<Enemy> = enemyList.flatMap {
+                it.enemyList
+            }
+            val randomIndex = Random.nextInt(0, enemyList.size)
+            if (randomIndex < enemyList.size) {
+                val enemy = enemyList[randomIndex]
+                if (enemy.isVisible)
+                    enemyDetailsCallback?.onCanonReady(enemy.enemyX, enemy.enemyY)
             }
         }
     }
@@ -166,7 +181,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
     private fun destroyBullet(bulletData: Pair<UUID, MutableStateFlow<BulletCoordinates>>) {
         bulletPositionList.onEachIndexed { index, flow ->
             if (bulletData.first == flow.first) {
-                onCollisionDetector?.onCollision(index)
+                onCollisionDetector?.onCollision(bulletData.first)
                 return@onEachIndexed
             }
         }
@@ -210,9 +225,10 @@ fun List<Enemy>.getRangeX(): Pair<Float, Float> {
 
 interface EnemyDetailsCallback {
     fun onAllEliminated(ammoCount: Int)
+    fun onCanonReady(enemyX: Float, enemyY: Float)
     fun onGameOver()
 }
 
 interface OnCollisionDetector {
-    fun onCollision(index: Int)
+    fun onCollision(id: UUID)
 }

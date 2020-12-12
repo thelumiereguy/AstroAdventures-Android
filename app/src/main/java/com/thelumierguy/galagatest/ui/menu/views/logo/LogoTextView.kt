@@ -42,7 +42,7 @@ class LogoTextView @JvmOverloads constructor(
             h.toFloat(),
             w.toFloat()))
         if (h != 0)
-            borderPaint.pathEffect = CornerPathEffect(h / 2F)
+            borderPaint.pathEffect = CornerPathEffect(12f)
     }
 
     enum class Direction {

@@ -2,6 +2,7 @@ package com.thelumierguy.galagatest.utils
 
 import android.os.Build
 import android.view.View
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 
 const val ALPHA = 0.97F
@@ -13,17 +14,23 @@ fun lowPass(
     output[0] = ALPHA * output[0] + (1 - ALPHA) * input[0]
 }
 
-fun map(
-    value: Float,
-    in_min: Float,
-    in_max: Float,
-    out_min: Float,
-    out_max: Float,
+fun <T : Number> map(
+    value: T,
+    in_min: T,
+    in_max: T,
+    out_min: T,
+    out_max: T,
 ): Float {
-    return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+    return (value.toFloat() - in_min.toFloat()) * (out_max.toFloat() - out_min.toFloat()) / (in_max.toFloat() - in_min.toFloat()) + out_min.toFloat()
 }
 
 fun AppCompatActivity.goFullScreen() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+        window.attributes.layoutInDisplayCutoutMode =
+            WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         window.setDecorFitsSystemWindows(false)
     } else {

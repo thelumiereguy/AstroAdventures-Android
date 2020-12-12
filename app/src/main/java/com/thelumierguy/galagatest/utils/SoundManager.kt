@@ -1,24 +1,32 @@
 package com.thelumierguy.galagatest.utils
 
 import android.content.Context
-import android.media.MediaPlayer
-import androidx.annotation.IntegerRes
+import android.media.AudioAttributes
+import android.media.AudioAttributes.CONTENT_TYPE_MUSIC
+import android.media.SoundPool
 
 class SoundManager(private val soundFile: Int, val context: Context) {
 
-    private var mediaPlayer: MediaPlayer? = null
+    private var soundPool: SoundPool? = null
+
+    var soundId: Int? = null
 
     fun init() {
-        mediaPlayer = MediaPlayer.create(context, soundFile)
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(2)
+            .setAudioAttributes(AudioAttributes.Builder().setContentType(CONTENT_TYPE_MUSIC)
+                .build())
+            .build()
+        soundId = soundPool?.load(context, soundFile, 1)
     }
 
     fun play() {
-        mediaPlayer?.start()
+        soundId?.let { soundPool?.play(it, 1F, 1F, 1, 0, 1f) }
     }
 
 
     fun release() {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
+        soundPool?.release();
+        soundPool = null;
     }
 }

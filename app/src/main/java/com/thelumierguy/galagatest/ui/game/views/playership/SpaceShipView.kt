@@ -5,15 +5,28 @@ import android.graphics.*
 import android.graphics.drawable.PictureDrawable
 import android.hardware.SensorEvent
 import android.util.AttributeSet
+import android.util.Range
+import com.thelumierguy.galagatest.data.PlayerHealthInfo
 import com.thelumierguy.galagatest.ui.base.BaseCustomView
+import com.thelumierguy.galagatest.ui.game.views.bullets.BulletCoordinates
+import com.thelumierguy.galagatest.ui.game.views.enemyShip.OnCollisionDetector
 import com.thelumierguy.galagatest.utils.AccelerometerManager
+import com.thelumierguy.galagatest.utils.HapticService
 import com.thelumierguy.galagatest.utils.lowPass
 import com.thelumierguy.galagatest.utils.map
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import java.util.*
 import kotlin.math.roundToInt
 
 
 class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
     BaseCustomView(context, attributeSet) {
+
+    var onCollisionDetector: OnCollisionDetector? = null
 
     private var accelerometerManager: AccelerometerManager? = null
 
@@ -64,7 +77,7 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
 
     private var translationXValue = 0F
 
-    private val multiplicationFactor = -50F
+    private val hapticService by lazy { HapticService(context) }
 
     private var displayRect = Rect()
 
@@ -116,6 +129,7 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         bodyTopPoint = h / 3F
         wingWidth = w / 15F
         missileSize = h / 8F
+        shipYRange = Range(top + streamLinedTopPoint, top + (2 * streamLinedTopPoint))
         initPicture()
     }
 
@@ -253,9 +267,10 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
 
     private fun processValues() {
         translationXValue = map(gravityValue[0], 6F, -6F, -wingWidth, measuredWidth + wingWidth)
-//        Log.d("Ship", "$translationXValue")
         if (translationXValue > wingWidth && translationXValue < measuredWidth - wingWidth) {
             currentShipPosition = translationXValue
+            shipXRange = Range(currentShipPosition - wingWidth,
+                currentShipPosition + wingWidth)
             displayRect.set(
                 (translationXValue - halfWidth).roundToInt(),
                 0,
@@ -275,6 +290,59 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
     fun startGame() {
         addAccelerometerListener()
         accelerometerManager?.startListening()
+    }
+
+    private var bulletWatcherJob: Job = Job()
+
+    private var shipXRange = Range(0F, 0F)
+    private var shipYRange = Range(0F, 0F)
+
+    private val bulletPositionList: MutableList<Pair<UUID, MutableStateFlow<BulletCoordinates>>> =
+        mutableListOf()
+
+    fun checkCollision(bulletId: UUID, bulletPositionState: MutableStateFlow<BulletCoordinates>) {
+        bulletPositionList.add(Pair(bulletId, bulletPositionState))
+        bulletWatcherJob.cancelChildren()
+        bulletWatcherJob = lifeCycleOwner.customViewLifeCycleScope.launch {
+            bulletPositionList.forEach { bulletData ->
+                launch {
+                    bulletData.second.collect { bulletPosition ->
+                        if (bulletPosition.y.roundToInt() > top) {
+                            if (shipYRange.contains(bulletPosition.y))
+                                if (shipXRange.contains(bulletPosition.x)) {
+                                    onPlayerHit(bulletData)
+                                }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
+    private fun onPlayerHit(bulletData: Pair<UUID, MutableStateFlow<BulletCoordinates>>) {
+        hapticService.performHapticFeedback(64, 48)
+        PlayerHealthInfo.onHit()
+        destroyBullet(bulletData)
+    }
+
+    private fun destroyBullet(bulletData: Pair<UUID, MutableStateFlow<BulletCoordinates>>) {
+        bulletPositionList.forEach { flow ->
+            if (bulletData.first == flow.first) {
+                onCollisionDetector?.onCollision(bulletData.first)
+            }
+        }
+        removeBullet(bulletData.first)
+    }
+
+    private fun removeBullet(bullet: UUID) {
+        val iterator = bulletPositionList.iterator()
+        while (iterator.hasNext()) {
+            val enemy = iterator.next()
+            if (enemy.first == bullet) {
+                iterator.remove()
+            }
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package com.thelumierguy.galagatest.ui.game.views.bullets
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import androidx.core.content.res.ResourcesCompat
@@ -18,18 +19,6 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
 
     var bulletTracker: BulletTracker? = null
 
-    private val jetPaint = Paint().apply {
-        color = ResourcesCompat.getColor(context.resources,
-            R.color.bulletColor,
-            null)
-        isAntiAlias = false
-        strokeWidth = 8F
-        style = Paint.Style.STROKE
-        strokeCap = Paint.Cap.ROUND
-        strokeWidth = 4F
-        isDither = false
-    }
-
     init {
         setLayerType(LAYER_TYPE_HARDWARE, null)
     }
@@ -38,19 +27,6 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
 
 
     val bulletSize = 40F
-
-    var shipX = 0F
-        set(value) {
-            field = value
-            fireSoundManager.play()
-            bulletStateList.add(Bullet(shipX))
-            invalidate()
-        }
-
-    var shipY = 0F
-        set(value) {
-            field = measuredHeight - value
-        }
 
     override fun onDraw(canvas: Canvas?) {
         canvas?.let {
@@ -76,18 +52,22 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
         }
     }
 
-    fun destroyBullet(index: Int) {
+    fun destroyBullet(id: UUID) {
         post {
-            if (index < bulletStateList.size) {
-                val bulletState = bulletStateList[index]
-                bulletStateList.removeAll { it == bulletState }
+            val bulletState = bulletStateList.find {
+                it.id == id
             }
-            invalidate()
+            bulletStateList.removeAll { it == bulletState }
         }
+        invalidate()
     }
 
 
-    inner class Bullet(private val bulletX: Float) {
+    inner class Bullet(
+        private val bulletX: Float,
+        shipY: Float,
+        private val sender: BulletSender,
+    ) {
 
         val id = UUID.randomUUID()
 
@@ -98,8 +78,24 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
         private var bulletPosition =
             MutableStateFlow(BulletCoordinates(bulletX, bulletY))
 
+        private val jetPaint = Paint().apply {
+            color = if (sender == BulletSender.PLAYER) {
+                ResourcesCompat.getColor(context.resources,
+                    R.color.bulletColor,
+                    null)
+            } else {
+                Color.RED
+            }
+            isAntiAlias = false
+            strokeWidth = 8F
+            style = Paint.Style.STROKE
+            strokeCap = Paint.Cap.ROUND
+            strokeWidth = 4F
+            isDither = false
+        }
+
         init {
-            bulletTracker?.initBulletTracking(id, bulletPosition)
+            bulletTracker?.initBulletTracking(id, bulletPosition, sender)
         }
 
 
@@ -116,11 +112,19 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
         }
 
         fun translate() {
-            bulletY -= 10
-            bulletPosition.value = BulletCoordinates(bulletX, bulletY)
-            if (bulletY < 0) {
-                bulletTracker?.cancelTracking(id)
+            if (sender == BulletSender.PLAYER) {
+                bulletY -= 10
+                if (bulletY < 0) {
+                    bulletTracker?.cancelTracking(id)
+                }
+            } else {
+                bulletY += 10
+                if (bulletY > measuredHeight) {
+                    bulletTracker?.cancelTracking(id)
+                }
             }
+            bulletPosition.value = BulletCoordinates(bulletX, bulletY)
+
         }
     }
 
@@ -128,16 +132,37 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        fireSoundManager.init()
+        if (!isInEditMode)
+            fireSoundManager.init()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         fireSoundManager.release()
     }
+
+    fun fire(x: Float, y: Float, sender: BulletSender) {
+        fireSoundManager.play()
+        if (sender == BulletSender.PLAYER) {
+            bulletStateList.add(Bullet(x, measuredHeight - y, sender))
+        } else {
+            bulletStateList.add(Bullet(x, y, sender))
+        }
+        invalidate()
+    }
+
+    enum class BulletSender {
+        PLAYER,
+        ENEMY
+    }
 }
 
 interface BulletTracker {
-    fun initBulletTracking(bulletId: UUID, bulletPosition: MutableStateFlow<BulletCoordinates>)
+    fun initBulletTracking(
+        bulletId: UUID,
+        bulletPosition: MutableStateFlow<BulletCoordinates>,
+        sender: BulletView.BulletSender,
+    )
+
     fun cancelTracking(bulletId: UUID)
 }
