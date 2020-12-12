@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
             binding.rootContainer.setPadding(0,
                 insets.systemWindowInsetTop,
                 0,
-                0)
+                insets.systemWindowInsetBottom)
             insets
         }
         initScenes()

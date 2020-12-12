@@ -9,12 +9,13 @@ import com.thelumierguy.galagatest.data.GlobalCounter.enemyTimerFlow
 import com.thelumierguy.galagatest.ui.base.BaseCustomView
 import com.thelumierguy.galagatest.ui.game.views.bullets.BulletCoordinates
 import com.thelumierguy.galagatest.utils.HapticService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.random.Random
 
 
 class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
@@ -42,7 +43,9 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
         EnemyColumn()
     )
 
-    var translateJob: Job = Job()
+    private var translateJob: Job = Job()
+
+    private var firingJob: Job = Job()
 
     private val bulletPositionList: MutableList<Pair<UUID, MutableStateFlow<BulletCoordinates>>> =
         mutableListOf()
@@ -78,6 +81,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         translateJob.cancel()
+        firingJob.cancel()
     }
 
 
@@ -95,7 +99,6 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
                     }
                     if (enemyList.isNotEmpty()) {
                         translateEnemy(System.currentTimeMillis())
-                        fireCanon()
                         invalidate()
                     }
                 }
@@ -104,15 +107,14 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
     }
 
     private fun fireCanon() {
-        if (System.currentTimeMillis() % 30 == 0L) {
-            val enemyList: List<Enemy> = enemyList.flatMap {
-                it.enemyList
-            }
-            val randomIndex = Random.nextInt(0, enemyList.size)
-            if (randomIndex < enemyList.size) {
-                val enemy = enemyList[randomIndex]
-                if (enemy.isVisible)
+        firingJob.cancel()
+        firingJob = lifeCycleOwner.customViewLifeCycleScope.launch {
+            ticker(1000, 200, Dispatchers.Default).receiveAsFlow().collect {
+                val enemyList = enemyList.random()
+                val enemy = enemyList.enemyList.findLast { it.isVisible }
+                enemy?.let {
                     enemyDetailsCallback?.onCanonReady(enemy.enemyX, enemy.enemyY)
+                }
             }
         }
     }
@@ -210,6 +212,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
 
     fun startGame() {
         startTranslating()
+        fireCanon()
     }
 
 }

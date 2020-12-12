@@ -100,14 +100,24 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
 
 
         fun drawBullet(canvas: Canvas) {
-            if (bulletY > 0) {
-                canvas.drawLine(
-                    bulletX,
-                    bulletY - bulletSize,
-                    bulletX,
-                    bulletY,
-                    jetPaint
-                )
+            if (bulletY > 0 && bulletY < measuredHeight) {
+                if (sender == BulletSender.PLAYER) {
+                    canvas.drawLine(
+                        bulletX,
+                        bulletY - bulletSize,
+                        bulletX,
+                        bulletY,
+                        jetPaint
+                    )
+                } else {
+                    canvas.drawLine(
+                        bulletX,
+                        bulletY,
+                        bulletX,
+                        bulletY - bulletSize,
+                        jetPaint
+                    )
+                }
             }
         }
 

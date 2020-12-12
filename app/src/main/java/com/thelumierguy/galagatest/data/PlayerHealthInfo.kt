@@ -14,7 +14,7 @@ object PlayerHealthInfo {
 
     fun onHit() {
         Log.d("Health", "${playerHealth.value}")
-        playerHealth.value -= 4
+        playerHealth.value -= 2
     }
 
     fun resetHealth() {
