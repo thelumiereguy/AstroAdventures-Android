@@ -3,19 +3,17 @@ package com.thelumierguy.astroadventures.ui.game.views.enemyShip
 import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
-import com.thelumierguy.astroadventures.R
 import com.thelumierguy.astroadventures.data.*
 import com.thelumierguy.astroadventures.data.GlobalCounter.enemyTimerFlow
 import com.thelumierguy.astroadventures.ui.base.BaseCustomView
 import com.thelumierguy.astroadventures.utils.HapticService
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.math.roundToInt
+import kotlin.NoSuchElementException
 
 
 class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
@@ -25,9 +23,11 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
         var speed = 2F
     }
 
-    var columnSize = 6
+    private val maxRowsSize = 4
 
-    var rowSize = 4
+    private var columnSize = 6
+
+    private var rowSize = 4
 
     lateinit var bulletStore: BulletStore
 
@@ -59,20 +59,8 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
 
     init {
         setLayerType(LAYER_TYPE_HARDWARE, null)
-        context.theme.obtainStyledAttributes(
-            attributeSet,
-            R.styleable.EnemyClusterView,
-            0, 0).apply {
-            try {
-                rowSize =
-                    getFloat(R.styleable.EnemyClusterView_enemiesRows,
-                        rowSize.toFloat()).roundToInt()
-                columnSize =
-                    getFloat(R.styleable.EnemyClusterView_enemiesColumns,
-                        columnSize.toFloat()).roundToInt()
-            } finally {
-                recycle()
-            }
+        if (rowSize < maxRowsSize) {
+            rowSize = LevelInfo.level + 1
         }
     }
 
@@ -122,11 +110,12 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
         }
     }
 
+    @Throws(NoSuchElementException::class)
     private fun fireCanon() {
         if (shouldEmitObjects()) {
             firingJob.cancel()
             firingJob = lifeCycleOwner.customViewLifeCycleScope.launch {
-                ticker(1000, 200, Dispatchers.Default).receiveAsFlow().collect {
+                ticker(1000, 200).receiveAsFlow().collect {
                     val enemyList = enemyList.random()
                     val enemy = enemyList.enemyList.findLast { it.isVisible }
                     enemy?.let {
@@ -214,7 +203,11 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
 
     fun startGame() {
         startTranslating()
-        fireCanon()
+        try {
+            fireCanon()
+        } catch (e: NoSuchElementException) {
+            e.printStackTrace()
+        }
     }
 
 }

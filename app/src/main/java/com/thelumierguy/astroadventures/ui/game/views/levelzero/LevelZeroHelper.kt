@@ -28,7 +28,7 @@ interface LevelZeroHelper {
     ) {
         levelZeroGameBinding.apply {
             lifecycleScope.launch {
-                dialogView.addDialog("Greetings Ranger!. It's good to have you back after so long. As you know, the planet's resources are all but depleted.")
+                dialogView.addDialog("Greetings Ranger!. It's good to have you back after so long. As you know, our planet's resources are all but depleted.")
                 delay(10000)
                 dialogView.addDialog("It is our job to go on this mission to help our world. I assume you remember the workings around here. But let's go over it again, shall we?")
                 delay(10000)

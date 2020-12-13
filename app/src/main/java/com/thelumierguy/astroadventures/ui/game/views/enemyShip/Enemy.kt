@@ -16,7 +16,7 @@ class Enemy {
 
     val hasDrops: Boolean by lazy {
         val chance = Random.nextDouble(0.0, 1.0)
-        chance > 0.9
+        chance > 0.8
     }
 
     var enemyLife = Random.nextInt(1, 4)

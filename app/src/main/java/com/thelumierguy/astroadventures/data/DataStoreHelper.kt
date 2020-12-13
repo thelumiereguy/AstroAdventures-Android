@@ -34,14 +34,6 @@ object DataStoreHelper {
         }
     }
 
-    //    .catch {
-//        if (it is IOException) {
-//            it.printStackTrace()
-//            emit(emptyPreferences())
-//        } else {
-//            throw it
-//        }
-//    }
     suspend fun setHasCompletedTutorial() {
         dataStore?.edit {
             it[HAS_COMPLETED_LEVEL_ZERO] = true

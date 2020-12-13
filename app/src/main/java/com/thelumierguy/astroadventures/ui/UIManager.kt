@@ -205,6 +205,7 @@ fun MainActivity.observeScreenStates() {
                                     viewModel.updateUIState(ScreenStates.LevelStartWarp)
                                 }
                             }
+                            saveScore(lifecycleScope)
                         }
                     }
                     ScreenStates.ViewHighScores -> {
@@ -249,7 +250,7 @@ fun MainActivity.observeScreenStates() {
                                 diedSubtitle.text =
                                     conserveAmmoText + getString(R.string.enemyBreached)
                             }
-                            saveScore(lifecycleScope)
+
                             btnMainMenu.setOnClickListener {
                                 viewModel.updateUIState(ScreenStates.GameMenu)
                             }
@@ -260,7 +261,7 @@ fun MainActivity.observeScreenStates() {
                                 viewModel.updateUIState(ScreenStates.LevelStart)
                             }
                         }
-
+                        saveScore(lifecycleScope)
                         transitionFromTo(youDiedScene.scene,
                             gameOverScene.scene,
                             Fade(Fade.MODE_IN).apply {

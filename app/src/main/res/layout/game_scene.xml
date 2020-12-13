@@ -55,7 +55,6 @@
         android:id="@+id/enemiesView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:enemiesRows="4"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
