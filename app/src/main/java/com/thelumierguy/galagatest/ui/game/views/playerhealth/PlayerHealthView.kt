@@ -63,7 +63,11 @@ class PlayerHealthView constructor(context: Context, attributeSet: AttributeSet?
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        progressLength = map(MAX_HEALTH, 0, MAX_HEALTH, measuredHeight, measuredWidth)
+        progressLength = map(PlayerHealthInfo.getPlayerHealthValue(),
+            0,
+            MAX_HEALTH,
+            measuredHeight,
+            measuredWidth)
     }
 
     private var valueAnimator: ValueAnimator? = null

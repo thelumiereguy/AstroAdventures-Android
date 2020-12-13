@@ -7,9 +7,9 @@ import kotlin.math.roundToInt
 class BulletStore(val maxCount: Float) {
 
     companion object {
-        const val HALF_REFILL = 120F
+        const val HALF_REFILL = 60F
 
-        fun getAmountScore(amount:Int) = (amount * 45)
+        fun getAmountScore(amount: Int) = (amount * 35)
     }
 
     private val bulletCountFlow = MutableStateFlow(HALF_REFILL.roundToInt())
@@ -22,8 +22,7 @@ class BulletStore(val maxCount: Float) {
 
     fun getAmmoCount() = bulletCountFlow.value
 
-//    fun refillInventory(resetCount: Int) {
-//        bulletCountFlow.value = resetCount
-//    }
-
+    fun addAmmo(ammoCount: Int) {
+        bulletCountFlow.value += ammoCount
+    }
 }

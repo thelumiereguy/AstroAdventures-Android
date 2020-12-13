@@ -12,6 +12,8 @@ object PlayerHealthInfo {
 
     fun getPlayerHealthFlow(): Flow<Int> = playerHealth
 
+    fun getPlayerHealthValue() = playerHealth.value
+
     fun onHit() {
         Log.d("Health", "${playerHealth.value}")
         playerHealth.value -= 2

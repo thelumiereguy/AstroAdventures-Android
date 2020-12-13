@@ -6,29 +6,31 @@ import android.graphics.drawable.PictureDrawable
 import android.hardware.SensorEvent
 import android.util.AttributeSet
 import android.util.Range
-import com.thelumierguy.galagatest.data.PlayerHealthInfo
+import com.thelumierguy.galagatest.data.*
 import com.thelumierguy.galagatest.ui.base.BaseCustomView
-import com.thelumierguy.galagatest.ui.game.views.bullets.BulletCoordinates
-import com.thelumierguy.galagatest.ui.game.views.enemyShip.OnCollisionDetector
+import com.thelumierguy.galagatest.ui.game.views.enemyShip.OnCollisionCallBack
 import com.thelumierguy.galagatest.utils.AccelerometerManager
 import com.thelumierguy.galagatest.utils.HapticService
 import com.thelumierguy.galagatest.utils.lowPass
 import com.thelumierguy.galagatest.utils.map
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.math.roundToInt
 
 
 class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
-    BaseCustomView(context, attributeSet) {
+    BaseCustomView(context, attributeSet), RigidBodyObject {
 
-    var onCollisionDetector: OnCollisionDetector? = null
+    var onCollisionCallBack: OnCollisionCallBack? = null
+        set(value) {
+            field = value
+            collisionDetector.onCollisionCallBack = value
+        }
+
+    override val collisionDetector: CollisionDetector = CollisionDetector(lifeCycleOwner)
 
     private var accelerometerManager: AccelerometerManager? = null
+
+    lateinit var bulletStore: BulletStore
 
     private var currentShipPosition: Float = 0F
 
@@ -292,57 +294,46 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         accelerometerManager?.startListening()
     }
 
-    private var bulletWatcherJob: Job = Job()
-
     private var shipXRange = Range(0F, 0F)
     private var shipYRange = Range(0F, 0F)
 
-    private val bulletPositionList: MutableList<Pair<UUID, MutableStateFlow<BulletCoordinates>>> =
-        mutableListOf()
 
-    fun checkCollision(bulletId: UUID, bulletPositionState: MutableStateFlow<BulletCoordinates>) {
-        bulletPositionList.add(Pair(bulletId, bulletPositionState))
-        bulletWatcherJob.cancelChildren()
-        bulletWatcherJob = lifeCycleOwner.customViewLifeCycleScope.launch {
-            bulletPositionList.forEach { bulletData ->
-                launch {
-                    bulletData.second.collect { bulletPosition ->
-                        if (bulletPosition.y.roundToInt() > top) {
-                            if (shipYRange.contains(bulletPosition.y))
-                                if (shipXRange.contains(bulletPosition.x)) {
-                                    onPlayerHit(bulletData)
-                                }
-                        }
+    override fun checkCollision(
+        softBodyObjectData: SoftBodyObjectData,
+    ) {
+        collisionDetector.checkCollision(softBodyObjectData) { softBodyPosition, softBodyObject ->
+
+            if (softBodyPosition.y.roundToInt() > top) {
+                if (shipYRange.contains(softBodyPosition.y))
+                    if (shipXRange.contains(softBodyPosition.x)) {
+                        onPlayerHit(softBodyObject)
+                    }
+            }
+
+        }
+    }
+
+    private fun onPlayerHit(softBodyObject: SoftBodyObjectData) {
+        when (softBodyObject.objectType) {
+            SoftBodyObjectType.BULLET -> {
+                hapticService.performHapticFeedback(64, 48)
+                PlayerHealthInfo.onHit()
+            }
+            is SoftBodyObjectType.DROP -> {
+                when (softBodyObject.objectType.dropType) {
+                    is DropType.Ammo -> {
+                        hapticService.performHapticFeedback(128, 48)
+                        if (::bulletStore.isInitialized)
+                            bulletStore.addAmmo(softBodyObject.objectType.dropType.ammoCount)
                     }
                 }
             }
-
         }
+        collisionDetector.onHitRigidBody(softBodyObject)
+
     }
 
-    private fun onPlayerHit(bulletData: Pair<UUID, MutableStateFlow<BulletCoordinates>>) {
-        hapticService.performHapticFeedback(64, 48)
-        PlayerHealthInfo.onHit()
-        destroyBullet(bulletData)
+    override fun removeSoftBodyEntry(bullet: UUID) {
+        collisionDetector.removeSoftBodyEntry(bullet)
     }
-
-    private fun destroyBullet(bulletData: Pair<UUID, MutableStateFlow<BulletCoordinates>>) {
-        bulletPositionList.forEach { flow ->
-            if (bulletData.first == flow.first) {
-                onCollisionDetector?.onCollision(bulletData.first)
-            }
-        }
-        removeBullet(bulletData.first)
-    }
-
-    private fun removeBullet(bullet: UUID) {
-        val iterator = bulletPositionList.iterator()
-        while (iterator.hasNext()) {
-            val enemy = iterator.next()
-            if (enemy.first == bullet) {
-                iterator.remove()
-            }
-        }
-    }
-
 }

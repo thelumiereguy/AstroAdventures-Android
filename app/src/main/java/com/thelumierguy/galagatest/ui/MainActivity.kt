@@ -8,19 +8,20 @@ import androidx.lifecycle.lifecycleScope
 import androidx.transition.Scene
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
+import com.thelumierguy.galagatest.data.SoftBodyObject
+import com.thelumierguy.galagatest.data.SoftBodyObjectData
+import com.thelumierguy.galagatest.data.SoftBodyObjectType
 import com.thelumierguy.galagatest.databinding.*
-import com.thelumierguy.galagatest.ui.game.views.bullets.BulletCoordinates
-import com.thelumierguy.galagatest.ui.game.views.bullets.BulletTracker
 import com.thelumierguy.galagatest.ui.game.views.bullets.BulletView
 import com.thelumierguy.galagatest.ui.game.views.enemyShip.EnemyDetailsCallback
-import com.thelumierguy.galagatest.ui.game.views.enemyShip.OnCollisionDetector
+import com.thelumierguy.galagatest.ui.game.views.enemyShip.OnCollisionCallBack
 import com.thelumierguy.galagatest.utils.BackgroundMusicManager
 import com.thelumierguy.galagatest.utils.goFullScreen
-import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, EnemyDetailsCallback {
+class MainActivity : AppCompatActivity(), SoftBodyObject.SoftBodyObjectTracker, OnCollisionCallBack,
+    EnemyDetailsCallback {
 
     lateinit var binding: ActivityMainBinding
 
@@ -100,24 +101,29 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
             }
     }
 
-    override fun initBulletTracking(
-        bulletId: UUID,
-        bulletPosition: MutableStateFlow<BulletCoordinates>,
-        sender: BulletView.BulletSender,
-    ) {
-        if (sender == BulletView.BulletSender.PLAYER) {
-            gameScene.binding.enemiesView.checkCollision(bulletId, bulletPosition)
+    override fun initBulletTracking(softBodyObjectData: SoftBodyObjectData) {
+        if (softBodyObjectData.sender == BulletView.Sender.PLAYER) {
+            gameScene.binding.enemiesView.checkCollision(softBodyObjectData)
         } else {
-            gameScene.binding.spaceShipView.checkCollision(bulletId, bulletPosition)
+            gameScene.binding.spaceShipView.checkCollision(softBodyObjectData)
         }
     }
 
-    override fun cancelTracking(bulletId: UUID) {
-        gameScene.binding.enemiesView.removeBullet(bulletId)
+
+    override fun cancelTracking(bulletId: UUID, sender: BulletView.Sender) {
+        if (sender == BulletView.Sender.PLAYER) {
+            gameScene.binding.spaceShipView.removeSoftBodyEntry(bulletId)
+        } else {
+            gameScene.binding.enemiesView.removeSoftBodyEntry(bulletId)
+        }
     }
 
-    override fun onCollision(id: UUID) {
-        gameScene.binding.bulletView.destroyBullet(id)
+    override fun onCollision(softBodyObject: SoftBodyObjectData) {
+        if (softBodyObject.objectType == SoftBodyObjectType.BULLET) {
+            gameScene.binding.bulletView.destroyBullet(softBodyObject.objectId)
+        } else {
+            gameScene.binding.dropsView.destroyObject(softBodyObject.objectId)
+        }
     }
 
     override fun onAllEliminated(ammoCount: Int) {
@@ -131,7 +137,11 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
     }
 
     override fun onCanonReady(enemyX: Float, enemyY: Float) {
-        gameScene.binding.bulletView.fire(enemyX, enemyY, BulletView.BulletSender.ENEMY)
+        gameScene.binding.bulletView.fire(enemyX, enemyY, BulletView.Sender.ENEMY)
+    }
+
+    override fun hasDrop(enemyX: Float, enemyY: Float) {
+        gameScene.binding.dropsView.dropGift(enemyX, enemyY)
     }
 
     fun startGameScene() {
@@ -163,6 +173,13 @@ class MainActivity : AppCompatActivity(), BulletTracker, OnCollisionDetector, En
     fun transitionTo(toScene: Scene, transition: Transition) {
         transitionManager.setTransition(toScene, transition)
         transitionManager.transitionTo(toScene)
+    }
+
+    override fun onBackPressed() {
+        when (viewModel.observeScreenState().value) {
+            ScreenStates.GameMenu -> finish()
+            else -> viewModel.updateUIState(ScreenStates.GameMenu)
+        }
     }
 
 }

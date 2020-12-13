@@ -17,6 +17,7 @@ import com.thelumierguy.galagatest.data.Score
 import com.thelumierguy.galagatest.data.Score.scoreFlow
 import com.thelumierguy.galagatest.databinding.GameSceneBinding
 import com.thelumierguy.galagatest.ui.game.views.bullets.BulletView
+import com.thelumierguy.galagatest.ui.game.views.drops.DropsView
 import com.thelumierguy.galagatest.utils.addTransition
 import com.thelumierguy.galagatest.utils.onEnd
 import com.thelumierguy.galagatest.utils.transitionSet
@@ -108,14 +109,16 @@ fun MainActivity.observeScreenStates() {
                         startGameScene()
                         gameScene.binding.apply {
                             val bulletStore = BulletStore(BulletStore.HALF_REFILL)
-                            bulletView.bulletTracker = this@observeScreenStates
+                            bulletView.softBodyObjectTracker = this@observeScreenStates
+                            dropsView.softBodyObjectTracker = this@observeScreenStates
                             healthView.onHealthEmpty = {
                                 viewModel.updateUIState(ScreenStates.YouDied)
                             }
                             enemiesView.enemyDetailsCallback = this@observeScreenStates
-                            enemiesView.onCollisionDetector = this@observeScreenStates
-                            spaceShipView.onCollisionDetector = this@observeScreenStates
+                            enemiesView.onCollisionCallBack = this@observeScreenStates
+                            spaceShipView.onCollisionCallBack = this@observeScreenStates
                             enemiesView.bulletStore = bulletStore
+                            spaceShipView.bulletStore = bulletStore
 
                             lifecycleScope.launchWhenCreated {
                                 scoreFlow().collect { score ->
@@ -148,7 +151,7 @@ fun MainActivity.observeScreenStates() {
                                             bulletStore.updateInventory()
                                             bulletView.fire(spaceShipView.getShipX(),
                                                 spaceShipView.getShipY(),
-                                                BulletView.BulletSender.PLAYER)
+                                                BulletView.Sender.PLAYER)
                                         } else {
                                             viewModel.updateUIState(ScreenStates.RanOutOfAmmo)
                                         }
@@ -183,8 +186,10 @@ fun MainActivity.observeScreenStates() {
                                 lifecycleScope.launchWhenCreated {
                                     delay(800L)
                                     bulletCountValueView.addNewValue(getAmountScore(it.bulletCount).toFloat()) {
-                                        totalScoreValueView.addNewValue(scoreFlow().value.toFloat() + getAmountScore(
-                                            it.bulletCount))
+                                        val newScore =
+                                            scoreFlow().value.toFloat() + getAmountScore(it.bulletCount)
+                                        Score.updateScore(getAmountScore(it.bulletCount).toLong())
+                                        totalScoreValueView.addNewValue(newScore)
                                     }
                                 }
 

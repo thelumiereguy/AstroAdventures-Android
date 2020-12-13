@@ -14,13 +14,18 @@ class Enemy {
 
     var isVisible: Boolean = true
 
+    val hasDrops: Boolean by lazy {
+        val chance = Random.nextDouble(0.0, 1.0)
+        chance > 0.9
+    }
+
     var enemyLife = Random.nextInt(1, 4)
 
     val enemyDelegate: IEnemyShip by lazy {
         when (enemyLife) {
-            1 -> TieFighter()
+            1 -> CapitalShip()
             2 -> AlienShip()
-            else -> CapitalShip()
+            else -> TieFighter()
         }
     }
 
