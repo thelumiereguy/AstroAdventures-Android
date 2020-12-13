@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
 
-    <com.thelumierguy.galagatest.ui.game.views.playership.SpaceShipView
+    <com.thelumierguy.astroadventures.ui.game.views.playership.SpaceShipView
         android:id="@+id/spaceShipView"
         android:layout_width="0dp"
         android:layout_height="0dp"

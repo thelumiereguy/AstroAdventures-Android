@@ -119,7 +119,7 @@
                 tools:text="200" />
 
 
-            <com.thelumierguy.galagatest.ui.base.AnimatedTextView
+            <com.thelumierguy.astroadventures.ui.base.AnimatedTextView
                 android:id="@+id/bulletCountValueView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -134,7 +134,7 @@
                 tools:text="200" />
 
 
-            <com.thelumierguy.galagatest.ui.base.AnimatedTextView
+            <com.thelumierguy.astroadventures.ui.base.AnimatedTextView
                 android:id="@+id/totalScoreValueView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -154,7 +154,7 @@
     </com.google.android.material.card.MaterialCardView>
 
 
-    <com.thelumierguy.galagatest.ui.menu.views.buttons.MenuButtonView
+    <com.thelumierguy.astroadventures.ui.menu.views.buttons.MenuButtonView
         android:id="@+id/btn_continue"
         style="@style/ButtonStyle"
         android:layout_width="0dp"
@@ -170,7 +170,7 @@
         app:layout_constraintWidth_percent="0.5" />
 
 
-    <com.thelumierguy.galagatest.ui.menu.views.buttons.MenuButtonView
+    <com.thelumierguy.astroadventures.ui.menu.views.buttons.MenuButtonView
         android:id="@+id/btn_main_menu"
         style="@style/ButtonStyle"
         android:layout_width="0dp"

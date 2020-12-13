@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SpaceShipView">
+        <attr name="processAccelerometer" format="boolean" />
+    </declare-styleable>
+
+
+    <declare-styleable name="EnemyClusterView">
+        <attr name="enemiesRows" format="float" />
+        <attr name="enemiesColumns" format="float" />
+    </declare-styleable>
+</resources>

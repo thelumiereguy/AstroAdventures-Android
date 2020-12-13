@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.thelumierguy.galagatest.ui.menu.views.logo.LogoTextView
+        <com.thelumierguy.astroadventures.ui.menu.views.logo.LogoTextView
             android:id="@+id/logoView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
     </FrameLayout>
 
 
-    <com.thelumierguy.galagatest.ui.menu.views.buttons.MenuButtonView
+    <com.thelumierguy.astroadventures.ui.menu.views.buttons.MenuButtonView
         android:id="@+id/btn_start"
         style="@style/ButtonStyle"
         android:layout_width="0dp"
@@ -46,7 +46,7 @@
         app:layout_constraintTop_toBottomOf="@+id/frameLayout"
         app:layout_constraintWidth_percent="0.5" />
 
-    <com.thelumierguy.galagatest.ui.menu.views.buttons.MenuButtonView
+    <com.thelumierguy.astroadventures.ui.menu.views.buttons.MenuButtonView
         android:id="@+id/btn_view_scores"
         style="@style/ButtonStyle"
         android:layout_width="0dp"
@@ -59,7 +59,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btn_start"
         app:layout_constraintWidth_percent="0.5" />
 
-    <com.thelumierguy.galagatest.ui.menu.views.buttons.MenuButtonView
+    <com.thelumierguy.astroadventures.ui.menu.views.buttons.MenuButtonView
         android:id="@+id/btn_exit"
         style="@style/ButtonStyle"
         android:layout_width="0dp"

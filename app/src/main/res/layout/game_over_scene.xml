@@ -66,7 +66,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
-    <com.thelumierguy.galagatest.ui.menu.views.buttons.MenuButtonView
+    <com.thelumierguy.astroadventures.ui.menu.views.buttons.MenuButtonView
         android:id="@+id/btn_try_again"
         style="@style/ButtonStyle"
         android:layout_width="0dp"
@@ -82,7 +82,7 @@
         app:layout_constraintWidth_percent="0.5" />
 
 
-    <com.thelumierguy.galagatest.ui.menu.views.buttons.MenuButtonView
+    <com.thelumierguy.astroadventures.ui.menu.views.buttons.MenuButtonView
         android:id="@+id/btn_main_menu"
         style="@style/ButtonStyle"
         android:layout_width="0dp"
