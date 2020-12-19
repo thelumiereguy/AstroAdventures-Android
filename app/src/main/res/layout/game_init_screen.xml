@@ -15,8 +15,8 @@
         android:text="@string/please_turn_up_your_volume"
         android:textAlignment="center"
         android:textColor="@color/primaryFontColor"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="italic|bold"
-        app:fontFamily="@font/computerpixel7" />
+        app:fontFamily="@font/determination_mono" />
 
 </FrameLayout>

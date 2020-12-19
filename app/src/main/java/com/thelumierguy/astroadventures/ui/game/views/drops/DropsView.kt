@@ -14,6 +14,8 @@ import com.thelumierguy.astroadventures.data.SoftBodyObjectType
 import com.thelumierguy.astroadventures.ui.base.BaseCustomView
 import com.thelumierguy.astroadventures.ui.game.views.bullets.BulletView
 import com.thelumierguy.astroadventures.ui.game.views.bullets.SoftBodyCoordinates
+import com.thelumierguy.astroadventures.utils.PLAYER_BULLET_SOUND
+import com.thelumierguy.astroadventures.utils.SoundData
 import com.thelumierguy.astroadventures.utils.SoundManager
 import java.util.*
 import kotlin.random.Random
@@ -21,7 +23,15 @@ import kotlin.random.Random
 class DropsView(context: Context, attributeSet: AttributeSet? = null) :
     BaseCustomView(context, attributeSet) {
 
-    private val fireSoundManager by lazy { SoundManager(R.raw.player_bullet_sound, context) }
+    private val fireSoundManager by lazy {
+        SoundManager(
+            context,
+            SoundData(R.raw.player_bullet_sound,
+                PLAYER_BULLET_SOUND
+            )
+        )
+
+    }
 
     var softBodyObjectTracker: SoftBodyObject.SoftBodyObjectTracker? = null
 
@@ -40,7 +50,7 @@ class DropsView(context: Context, attributeSet: AttributeSet? = null) :
     }
 
     fun dropGift(x: Float, y: Float) {
-        fireSoundManager.play()
+        fireSoundManager.play(PLAYER_BULLET_SOUND)
         ammoDropsList.add(AmmoDrop(bulletX = x,
             shipY = y,
             maxHeight = measuredHeight,
@@ -99,7 +109,7 @@ class DropsView(context: Context, attributeSet: AttributeSet? = null) :
         dropType: SoftBodyObjectType,
     ) : SoftBodyObject(bulletX, shipY, sender, maxHeight, bulletTracker, dropType) {
 
-        override val speed: Int = 10
+        override val speed: Int = 6
 
         private val ammoDropPaint = Paint().apply {
             color = ResourcesCompat.getColor(context.resources,

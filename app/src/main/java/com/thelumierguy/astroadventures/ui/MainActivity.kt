@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.transition.Scene
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
@@ -140,9 +139,7 @@ class MainActivity : AppCompatActivity(), SoftBodyObject.SoftBodyObjectTracker, 
     }
 
     override fun onAllEliminated(ammoCount: Int) {
-        lifecycleScope.launchWhenCreated {
-            showLevelCompleteScene(ammoCount)
-        }
+        showLevelCompleteScene(ammoCount)
     }
 
     internal fun showLevelCompleteScene(ammoCount: Int) {

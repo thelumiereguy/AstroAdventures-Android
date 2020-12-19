@@ -10,7 +10,6 @@ import android.util.AttributeSet
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.isVisible
 import com.thelumierguy.astroadventures.R
 
 
@@ -54,11 +53,11 @@ class InstructionsView @JvmOverloads constructor(
 
     fun addDialog(text: String) {
         currentTextLength = 0
-        isVisible = true
+        alpha = 1F
         valueAnimator?.cancel()
 
         valueAnimator = ValueAnimator.ofInt(currentTextLength, text.length)
-            .setDuration(500L).apply {
+            .setDuration(1000L).apply {
                 interpolator = AccelerateDecelerateInterpolator()
                 addUpdateListener {
                     val currentProgress = it.animatedValue

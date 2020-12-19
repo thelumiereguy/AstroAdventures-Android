@@ -7,28 +7,29 @@
 
     <TextView
         android:id="@+id/successText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:letterSpacing="0.1"
         android:text="@string/level_complete"
         android:textAlignment="center"
         android:textColor="@color/bulletColor"
-        android:textSize="48sp"
-        app:fontFamily="@font/computerpixel7"
+        android:textSize="32sp"
+        app:fontFamily="@font/determination_mono"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintWidth_percent="0.7" />
 
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/scoreBoard_group"
         android:layout_width="wrap_content"
-        android:visibility="invisible"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         app:constraint_referenced_ids="scoreBoard,btn_main_menu,btn_continue" />
 
 
@@ -63,9 +64,9 @@
                 android:text="Score"
                 android:textAlignment="center"
                 android:textColor="@color/primaryFontColor"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold|italic"
-                app:fontFamily="@font/computerpixel7"
+                app:fontFamily="@font/determination_mono"
                 app:layout_constraintBottom_toTopOf="@id/bulletCountView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -79,9 +80,9 @@
                 android:text="Ammo Bonus"
                 android:textAlignment="center"
                 android:textColor="@color/primaryFontColor"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold|italic"
-                app:fontFamily="@font/computerpixel7"
+                app:fontFamily="@font/determination_mono"
                 app:layout_constraintBottom_toTopOf="@id/totalScoreView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/scoreView" />
@@ -95,9 +96,9 @@
                 android:text="Total"
                 android:textAlignment="center"
                 android:textColor="@color/primaryFontColor"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold|italic"
-                app:fontFamily="@font/computerpixel7"
+                app:fontFamily="@font/determination_mono"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -111,8 +112,8 @@
                 android:letterSpacing="0.1"
                 android:textAlignment="center"
                 android:textColor="@color/secondaryFontColor"
-                android:textSize="24sp"
-                app:fontFamily="@font/computerpixel7"
+                android:textSize="20sp"
+                app:fontFamily="@font/determination_mono"
                 app:layout_constraintBottom_toTopOf="@id/bulletCountValueView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -126,8 +127,8 @@
                 android:letterSpacing="0.1"
                 android:textAlignment="center"
                 android:textColor="@color/secondaryFontColor"
-                android:textSize="24sp"
-                app:fontFamily="@font/computerpixel7"
+                android:textSize="20sp"
+                app:fontFamily="@font/determination_mono"
                 app:layout_constraintBottom_toTopOf="@id/totalScoreValueView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/scoreViewValue"
@@ -141,8 +142,8 @@
                 android:letterSpacing="0.1"
                 android:textAlignment="center"
                 android:textColor="@color/secondaryFontColor"
-                android:textSize="24sp"
-                app:fontFamily="@font/computerpixel7"
+                android:textSize="20sp"
+                app:fontFamily="@font/determination_mono"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/bulletCountValueView"
@@ -167,7 +168,7 @@
         app:layout_constraintTop_toBottomOf="@+id/scoreBoard"
         app:layout_constraintVertical_bias="0.39"
         app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintWidth_percent="0.5" />
+        app:layout_constraintWidth_percent="0.6" />
 
 
     <com.thelumierguy.astroadventures.ui.menu.views.buttons.MenuButtonView
@@ -182,7 +183,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_continue"
-        app:layout_constraintWidth_percent="0.5" />
+        app:layout_constraintWidth_percent="0.6" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

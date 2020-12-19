@@ -45,3 +45,19 @@ fun AppCompatActivity.goFullScreen() {
                 or View.SYSTEM_UI_FLAG_FULLSCREEN)
     }
 }
+
+fun <T> MutableList<T>.forEachMutableSafe(operation: (T, MutableIterator<T>) -> Unit) {
+    val iterator = iterator()
+    while (iterator.hasNext()) {
+        val item = iterator.next()
+        operation(item, iterator)
+    }
+}
+
+fun <T> List<T>.forEachSafe(operation: (T, Iterator<T>) -> Unit) {
+    val iterator = iterator()
+    while (iterator.hasNext()) {
+        val item = iterator.next()
+        operation(item, iterator)
+    }
+}

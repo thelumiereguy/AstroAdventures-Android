@@ -1,6 +1,7 @@
 package com.thelumierguy.astroadventures.ui
 
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -25,7 +26,7 @@ sealed class ScreenStates {
     object AppInit : ScreenStates()
     object GameMenu : ScreenStates()
     object LevelStart : ScreenStates()
-    object StartLevelZero : ScreenStates()
+    data class StartLevelZero(val stateJob: Job = Job()) : ScreenStates()
     object StartGame : ScreenStates()
     object ViewHighScores : ScreenStates()
     object LevelStartWarp : ScreenStates()

@@ -26,9 +26,9 @@
             android:padding="24dp"
             android:text="@string/app_name"
             android:textColor="@color/secondaryFontColor"
-            android:textSize="36sp"
+            android:textSize="32sp"
             android:textStyle="italic|bold"
-            app:fontFamily="@font/computerpixel7" />
+            app:fontFamily="@font/determination_mono" />
 
     </FrameLayout>
 
@@ -44,7 +44,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout"
-        app:layout_constraintWidth_percent="0.5" />
+        app:layout_constraintWidth_percent="0.6" />
 
     <com.thelumierguy.astroadventures.ui.menu.views.buttons.MenuButtonView
         android:id="@+id/btn_view_scores"
@@ -57,7 +57,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_start"
-        app:layout_constraintWidth_percent="0.5" />
+        app:layout_constraintWidth_percent="0.6" />
 
     <com.thelumierguy.astroadventures.ui.menu.views.buttons.MenuButtonView
         android:id="@+id/btn_exit"
@@ -70,6 +70,6 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_view_scores"
-        app:layout_constraintWidth_percent="0.5" />
+        app:layout_constraintWidth_percent="0.6" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

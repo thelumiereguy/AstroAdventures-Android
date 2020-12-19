@@ -10,13 +10,21 @@ import com.thelumierguy.astroadventures.R
 import com.thelumierguy.astroadventures.data.SoftBodyObject
 import com.thelumierguy.astroadventures.data.SoftBodyObjectType
 import com.thelumierguy.astroadventures.ui.base.BaseCustomView
-import com.thelumierguy.astroadventures.utils.SoundManager
+import com.thelumierguy.astroadventures.utils.*
 import java.util.*
 
 class BulletView(context: Context, attributeSet: AttributeSet? = null) :
     BaseCustomView(context, attributeSet) {
 
-    private val fireSoundManager by lazy { SoundManager(R.raw.player_bullet_sound, context) }
+    private val fireSoundManager by lazy {
+        SoundManager(
+            context,
+            SoundData(R.raw.player_bullet_sound,
+                PLAYER_BULLET_SOUND
+            )
+        )
+
+    }
 
     var softBodyObjectTracker: SoftBodyObject.SoftBodyObjectTracker? = null
 
@@ -43,7 +51,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
             levelZeroCallBackBullet?.onFired()
         }
         isCallBackInvoked = true
-        fireSoundManager.play()
+        fireSoundManager.play(PLAYER_BULLET_SOUND)
         if (sender == Sender.PLAYER) {
             bulletStateList.add(Bullet(x,
                 measuredHeight - y,
@@ -58,7 +66,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
                 softBodyObjectTracker
             ))
         }
-        invalidate()
+        postInvalidate()
     }
 
     init {
@@ -72,9 +80,9 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
 
     override fun onDraw(canvas: Canvas?) {
         canvas?.let {
-            bulletStateList.iterator().forEach {
-                it.drawObject(canvas)
-                it.translateObject()
+            bulletStateList.forEachSafe { bullet, iterator ->
+                bullet.drawObject(canvas)
+                bullet.translateObject()
             }
             bulletStateList.cleanupBullets()
             if (bulletStateList.isNotEmpty()) {
@@ -84,12 +92,9 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
     }
 
     private fun MutableList<Bullet>.cleanupBullets() {
-        val iterator = iterator()
-        while (iterator.hasNext()) {
-            val bullet = iterator.next()
+        forEachMutableSafe { bullet, iterator ->
             if (bullet.getObjectY() < 0 && bullet.getObjectY() > measuredHeight) {
                 iterator.remove()
-                invalidate()
             }
         }
     }

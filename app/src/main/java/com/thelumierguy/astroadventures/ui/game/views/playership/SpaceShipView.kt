@@ -282,7 +282,7 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         if (processAccelerometerValues) {
             processValues()
         } else {
-            if (gravityValue[0] < -4F || gravityValue[0] > 4F) {
+            if (gravityValue[0] < -3F || gravityValue[0] > 3F) {
                 processAccelerometerValues = true
                 if (!isCallBackInvoked) {
                     gravityValue[0] = 0F
@@ -368,7 +368,7 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
             isCallBackInvoked = false
         }
 
-    var isCallBackInvoked = true
+    private var isCallBackInvoked = true
 }
 
 interface LevelZeroCallBackPlayer {

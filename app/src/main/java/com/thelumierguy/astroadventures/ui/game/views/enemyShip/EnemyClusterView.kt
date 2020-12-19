@@ -8,12 +8,12 @@ import com.thelumierguy.astroadventures.data.GlobalCounter.enemyTimerFlow
 import com.thelumierguy.astroadventures.ui.base.BaseCustomView
 import com.thelumierguy.astroadventures.utils.HapticService
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.NoSuchElementException
 
 
 class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
@@ -23,11 +23,11 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
         var speed = 2F
     }
 
-    private val maxRowsSize = 4
+    private val maxRowsSize = 5
 
     private var columnSize = 6
 
-    private var rowSize = 4
+    private var rowSize = 1
 
     lateinit var bulletStore: BulletStore
 
@@ -49,7 +49,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
 
     private var translateJob: Job = Job()
 
-    private var firingJob: Job = Job()
+    private var firingJob: Job = SupervisorJob()
 
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -110,16 +110,18 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
         }
     }
 
-    @Throws(NoSuchElementException::class)
+
     private fun fireCanon() {
         if (shouldEmitObjects()) {
             firingJob.cancel()
             firingJob = lifeCycleOwner.customViewLifeCycleScope.launch {
                 ticker(1000, 200).receiveAsFlow().collect {
-                    val enemyList = enemyList.random()
-                    val enemy = enemyList.enemyList.findLast { it.isVisible }
-                    enemy?.let {
-                        enemyDetailsCallback?.onCanonReady(enemy.enemyX, enemy.enemyY)
+                    if (enemyList.isNotEmpty()) {
+                        val enemyList = enemyList.random()
+                        val enemy = enemyList.enemyList.findLast { it.isVisible }
+                        enemy?.let {
+                            enemyDetailsCallback?.onCanonReady(enemy.enemyX, enemy.enemyY)
+                        }
                     }
                 }
             }
@@ -203,11 +205,7 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
 
     fun startGame() {
         startTranslating()
-        try {
-            fireCanon()
-        } catch (e: NoSuchElementException) {
-            e.printStackTrace()
-        }
+        fireCanon()
     }
 
 }

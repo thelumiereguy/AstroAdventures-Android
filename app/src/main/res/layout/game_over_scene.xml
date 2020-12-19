@@ -17,8 +17,8 @@
         android:text="@string/game_over"
         android:textAlignment="center"
         android:textColor="@color/secondaryFontColor"
-        android:textSize="48sp"
-        app:fontFamily="@font/computerpixel7"
+        android:textSize="44sp"
+        app:fontFamily="@font/determination_mono"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -37,8 +37,8 @@
         android:lineSpacingMultiplier="1.1"
         android:textAlignment="center"
         android:textColor="@color/shipShadowColor"
-        android:textSize="24sp"
-        app:fontFamily="@font/computerpixel7"
+        android:textSize="20sp"
+        app:fontFamily="@font/determination_mono"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
 
@@ -57,8 +57,8 @@
         android:text="@string/score_text"
         android:textAlignment="center"
         android:textColor="@color/primaryFontColor"
-        android:textSize="24sp"
-        app:fontFamily="@font/computerpixel7"
+        android:textSize="20sp"
+        app:fontFamily="@font/determination_mono"
         app:layout_constraintBottom_toTopOf="@+id/died_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -79,7 +79,7 @@
         app:layout_constraintTop_toBottomOf="@+id/died_subtitle"
         app:layout_constraintVertical_bias="0.76"
         app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintWidth_percent="0.5" />
+        app:layout_constraintWidth_percent="0.6" />
 
 
     <com.thelumierguy.astroadventures.ui.menu.views.buttons.MenuButtonView
@@ -94,7 +94,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_try_again"
-        app:layout_constraintWidth_percent="0.5" />
+        app:layout_constraintWidth_percent="0.6" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

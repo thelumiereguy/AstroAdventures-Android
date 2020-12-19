@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="enemyTranslateNegativeY">-400dp</dimen>
+    <dimen name="enemyTranslateY">400dp</dimen>
+</resources>

@@ -1,5 +1,7 @@
 package com.thelumierguy.astroadventures.ui
 
+import android.media.MediaPlayer
+import android.util.Log
 import android.view.Gravity
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.LinearInterpolator
@@ -18,12 +20,12 @@ import com.thelumierguy.astroadventures.data.Score.saveScore
 import com.thelumierguy.astroadventures.data.Score.scoreFlow
 import com.thelumierguy.astroadventures.databinding.GameSceneBinding
 import com.thelumierguy.astroadventures.ui.game.views.bullets.BulletView
-import com.thelumierguy.astroadventures.utils.addTransition
-import com.thelumierguy.astroadventures.utils.onEnd
-import com.thelumierguy.astroadventures.utils.transitionSet
+import com.thelumierguy.astroadventures.utils.*
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.zip
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 
@@ -101,14 +103,16 @@ fun MainActivity.observeScreenStates() {
                         transitionTo(levelStartScene.scene, Fade(Fade.MODE_IN).apply {
                             onEnd {
                                 uiEventJob = lifecycleScope.launchWhenCreated {
-                                    (3 downTo 1).forEach {
-                                        levelStartScene.binding.timerView.text = it.toString()
-                                        delay(1000)
+                                    if (isActive) {
+                                        (3 downTo 1).forEach {
+                                            levelStartScene.binding.timerView.text = it.toString()
+                                            delay(1000)
+                                        }
+                                        if (LevelInfo.hasPlayedTutorial)
+                                            viewModel.updateUIState(ScreenStates.StartGame)
+                                        else
+                                            viewModel.updateUIState(ScreenStates.StartLevelZero(Job()))
                                     }
-                                    if (LevelInfo.hasPlayedTutorial)
-                                        viewModel.updateUIState(ScreenStates.StartGame)
-                                    else
-                                        viewModel.updateUIState(ScreenStates.StartLevelZero)
                                 }
                             }
                         })
@@ -122,8 +126,10 @@ fun MainActivity.observeScreenStates() {
 
                             lifecycleScope.launchWhenCreated {
                                 scoreFlow().collect { score ->
-                                    scoreView.text =
-                                        getString(R.string.score_text, score)
+                                    if (isActive) {
+                                        scoreView.text =
+                                            getString(R.string.score_text, score)
+                                    }
                                 }
                             }
 
@@ -162,7 +168,7 @@ fun MainActivity.observeScreenStates() {
                     }
 
                     is ScreenStates.StartLevelZero -> {
-                        startLevelZero()
+                        startLevelZero(it.stateJob)
                     }
                     is ScreenStates.LevelComplete -> {
                         transitionFromTo(gameScene.scene,
@@ -272,6 +278,14 @@ fun MainActivity.observeScreenStates() {
 
 
                     ScreenStates.YouDied -> {
+                        val deathSoundManager = MediaPlayer.create(
+                            this@observeScreenStates, R.raw.player_explosion
+                        ).also {
+                            it.setOnPreparedListener {
+                                it.start()
+                            }
+                        }
+                        delay(500)
                         transitionFromTo(gameScene.scene,
                             youDiedScene.scene,
                             Fade(Fade.MODE_IN).apply {
@@ -282,6 +296,7 @@ fun MainActivity.observeScreenStates() {
                             .setDuration(2200).withEndAction {
                                 lifecycleScope.launchWhenCreated {
                                     delay(2000L)
+                                    deathSoundManager.release()
                                     viewModel.updateUIState(ScreenStates.GameOver)
                                 }
                             }.start()
@@ -299,21 +314,23 @@ fun MainActivity.observeScreenStates() {
     }
 }
 
-private fun MainActivity.startLevelZero() {
+private fun MainActivity.startLevelZero(stateJob: Job) {
     resetGameScene()
     levelZeroGameScene.binding.apply {
         val bulletStore = BulletStore(BulletStore.HALF_REFILL)
         enemiesView.bulletStore = bulletStore
         spaceShipView.bulletStore = bulletStore
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launch(stateJob) {
             scoreFlow().collect { score ->
+                Log.d("LevelZero score", "$score")
                 scoreView.text =
                     getString(R.string.score_text, score)
             }
         }
 
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launch(stateJob) {
             bulletStore.bulletCountFlow().collect { ammoCount ->
+                Log.d("LevelZero bullet", "$ammoCount")
                 ammoCountView.setBulletCount(ammoCount, bulletStore.maxCount)
             }
         }

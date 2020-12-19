@@ -24,7 +24,6 @@ import kotlin.math.sin
 class PlayerHealthView constructor(context: Context, attributeSet: AttributeSet? = null) :
     BaseCustomView(context, attributeSet) {
 
-
     private val heartPaint by lazy {
         Paint().apply {
             color = Color.parseColor("#DD3D1F")

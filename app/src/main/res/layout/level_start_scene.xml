@@ -16,8 +16,8 @@
         android:text="@string/level_start"
         android:textAlignment="center"
         android:textColor="@color/bulletColor"
-        android:textSize="32sp"
-        app:fontFamily="@font/computerpixel7" />
+        android:textSize="28sp"
+        app:fontFamily="@font/determination_mono" />
 
 
     <TextView
@@ -27,8 +27,8 @@
         android:layout_centerInParent="true"
         android:gravity="center"
         android:textColor="@color/primaryFontColor"
-        android:textSize="42sp"
-        app:fontFamily="@font/computerpixel7"
+        android:textSize="38sp"
+        app:fontFamily="@font/determination_mono"
         tools:text="3" />
 
 </RelativeLayout>

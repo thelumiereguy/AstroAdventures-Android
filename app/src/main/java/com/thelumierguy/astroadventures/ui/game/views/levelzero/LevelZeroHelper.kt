@@ -1,13 +1,12 @@
 package com.thelumierguy.astroadventures.ui.game.views.levelzero
 
-import android.util.TypedValue
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
+import com.thelumierguy.astroadventures.R
 import com.thelumierguy.astroadventures.data.*
-import com.thelumierguy.astroadventures.data.DataStoreHelper.setHasCompletedTutorial
 import com.thelumierguy.astroadventures.databinding.LevelZeroGameBinding
 import com.thelumierguy.astroadventures.ui.MainActivity
 import com.thelumierguy.astroadventures.ui.ScreenStates
@@ -15,8 +14,11 @@ import com.thelumierguy.astroadventures.ui.game.views.bullets.BulletView
 import com.thelumierguy.astroadventures.ui.game.views.bullets.LevelZeroCallBackBullet
 import com.thelumierguy.astroadventures.ui.game.views.enemyShip.EnemyDetailsCallback
 import com.thelumierguy.astroadventures.ui.game.views.enemyShip.OnCollisionCallBack
+import com.thelumierguy.astroadventures.ui.game.views.instructions.DialogHelper
 import com.thelumierguy.astroadventures.ui.game.views.playership.LevelZeroCallBackPlayer
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -26,27 +28,61 @@ interface LevelZeroHelper {
         levelZeroGameBinding: LevelZeroGameBinding,
         bulletStore: BulletStore,
     ) {
+        var dialogJob: Job = Job()
+
         levelZeroGameBinding.apply {
-            lifecycleScope.launch {
-                dialogView.addDialog("Greetings Ranger!. It's good to have you back after so long. As you know, our planet's resources are all but depleted.")
-                delay(10000)
-                dialogView.addDialog("It is our job to go on this mission to help our world. I assume you remember the workings around here. But let's go over it again, shall we?")
-                delay(10000)
-                dialogView.addDialog("Please tilt your phone to control your ship.")
-                delay(3000)
-                spaceShipView.startGame()
-                spaceShipView.levelZeroCallBackPlayer = object : LevelZeroCallBackPlayer {
-                    override fun onTilted() {
-                        lifecycleScope.launch {
-                            dialogView.addDialog("Good Job. Try conserving your resources as they are hard to come by these days.")
-                            delay(10000)
-                            dialogView.addDialog("At the top-left, you'll find information regarding your Ammunition reserves.")
+            val dialogHelper = DialogHelper()
+
+            suspend fun LevelZeroGameBinding.handleDialogs() {
+                val nextDialog = dialogHelper.getNextDialog()
+                nextDialog?.let { dialog ->
+                    when (dialog.type) {
+                        DialogHelper.InstructionType.TEXT -> {
+                            dialogView.alpha = 1F
+                            tvBlinking.stopBlinking()
+                            dialogView.addDialog(dialog.text)
+                            delay(dialog.duration)
+                        }
+                        DialogHelper.InstructionType.AMMO -> {
+                            tvBlinking.stopBlinking()
+                            dialogView.addDialog(dialog.text)
                             ammoCountView.isVisible = true
-                            delay(8000)
-                            dialogView.addDialog("And at the bottom, you'll find information regarding your Spaceship's health.")
+                            delay(dialog.duration)
+                        }
+                        DialogHelper.InstructionType.HEALTH -> {
+                            tvBlinking.stopBlinking()
+                            dialogView.addDialog(dialog.text)
                             healthView.isVisible = true
-                            delay(8000)
-                            dialogView.addDialog("Now tap on your screen to fire a missile.")
+                            delay(dialog.duration)
+                        }
+                        DialogHelper.InstructionType.TILT -> {
+                            dialogHelper.setLock()
+                            dialogView.alpha = 0F
+                            spaceShipView.levelZeroCallBackPlayer =
+                                object : LevelZeroCallBackPlayer {
+                                    override fun onTilted() {
+                                        dialogHelper.removeLock()
+                                        root.post {
+                                            dialogView.performClick()
+                                        }
+                                    }
+                                }
+                            spaceShipView.startGame()
+                            tvBlinking.text = dialog.text
+                            tvBlinking.startBlinking()
+                        }
+                        DialogHelper.InstructionType.FIRE -> {
+                            dialogHelper.setLock()
+                            dialogView.alpha = 0F
+                            tvBlinking.text = dialog.text
+                            bulletView.levelZeroCallBackBullet = object : LevelZeroCallBackBullet {
+                                override fun onFired() {
+                                    dialogHelper.removeLock()
+                                    root.post {
+                                        dialogView.performClick()
+                                    }
+                                }
+                            }
                             bulletView.setOnClickListener {
                                 if (bulletStore.getAmmoCount() != 0) {
                                     bulletStore.updateInventory()
@@ -58,50 +94,51 @@ interface LevelZeroHelper {
                                 }
                             }
                             bulletView.isVisible = true
+                            tvBlinking.startBlinking()
                         }
-                    }
-                }
-                bulletView.levelZeroCallBackBullet = object : LevelZeroCallBackBullet {
-                    override fun onFired() {
-                        lifecycleScope.launch {
-                            dialogView.addDialog("Good Job!")
-                            delay(5000)
-                            dialogView.addDialog("Hold on! There's an incoming transmission.")
-                            delay(8000)
-                            dialogView.addDialog("Mayday! Mayday! Someone just fired a missile and our location has been compromised. " +
-                                    "Now, all of China knows we're here.")
-                            delay(15000)
-                            dialogView.addDialog("There's a fleet of Space Pirates heading your way. Finish them off as soon as possible.")
-                            dropsView.isVisible = true
-                            delay(10000)
+                        DialogHelper.InstructionType.EnemySpotted -> {
+                            dialogHelper.setLock()
                             enemiesView.animate()
-                                .translationYBy(TypedValue.applyDimension(
-                                    TypedValue.COMPLEX_UNIT_DIP,
-                                    100F,
-                                    resources.displayMetrics
-                                ))
-                                .setDuration(1000L)
+                                .translationYBy((resources.getDimension(R.dimen.enemyTranslateY)))
+                                .setDuration(2000L)
                                 .withEndAction {
-                                    lifecycleScope.launch {
-                                        dialogView.addDialog("You'll occasionally see an enemy drop a Blue Capsule. Be sure to collect it to gather more ammunition.")
-                                        delay(10000)
-                                        dialogView.addDialog("Good Luck!")
-                                        initUIComponents(levelZeroGameBinding,
-                                            this@showInitialInstructions)
-                                        delay(4000)
-                                        scoreView.isVisible = true
-                                        LevelInfo.hasPlayedTutorial = true
-                                        setHasCompletedTutorial()
-                                        TransitionManager.beginDelayedTransition(root)
-                                        dialogView.isVisible = false
-                                        enemiesView.startGame()
-                                    }
+                                    dialogHelper.removeLock()
+                                    dialogView.performClick()
                                 }.start()
-
+                        }
+                        DialogHelper.InstructionType.EnemyTranslated -> {
+                            dialogView.addDialog(dialog.text)
+                            initUIComponents(levelZeroGameBinding,
+                                this@showInitialInstructions)
+                            scoreView.isVisible = true
+                            LevelInfo.hasPlayedTutorial = true
+//                            setHasCompletedTutorial()
+                            TransitionManager.beginDelayedTransition(root)
+                            delay(dialog.duration)
+                            dialogView.isVisible = false
+                            enemiesView.startGame()
+                            return
                         }
                     }
                 }
             }
+
+            fun startLoopingThroughDialogs() {
+                dialogJob.cancel()
+                dialogJob = lifecycleScope.launch {
+                    if (isActive)
+                        (dialogHelper.counter..dialogHelper.getItemSize()).forEach { _ ->
+                            handleDialogs()
+                        }
+                }
+
+            }
+
+            dialogView.setOnClickListener {
+                startLoopingThroughDialogs()
+            }
+
+            startLoopingThroughDialogs()
         }
     }
 
@@ -146,9 +183,7 @@ interface LevelZeroHelper {
 
         val enemyDetailsCallback = object : EnemyDetailsCallback {
             override fun onAllEliminated(ammoCount: Int) {
-                lifecycleScope.launchWhenCreated {
-                    showLevelCompleteScene(ammoCount)
-                }
+                showLevelCompleteScene(ammoCount)
             }
 
             override fun onCanonReady(enemyX: Float, enemyY: Float) {
