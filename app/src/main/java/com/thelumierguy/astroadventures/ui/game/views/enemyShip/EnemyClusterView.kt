@@ -51,10 +51,12 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
 
     private var firingJob: Job = SupervisorJob()
 
+    var disableInit: Boolean = false
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        initEnemies()
+        if (!disableInit)
+            initEnemies()
     }
 
     init {

@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import com.thelumierguy.astroadventures.R
 
 
@@ -53,7 +54,7 @@ class InstructionsView @JvmOverloads constructor(
 
     fun addDialog(text: String) {
         currentTextLength = 0
-        alpha = 1F
+        isVisible = true
         valueAnimator?.cancel()
 
         valueAnimator = ValueAnimator.ofInt(currentTextLength, text.length)

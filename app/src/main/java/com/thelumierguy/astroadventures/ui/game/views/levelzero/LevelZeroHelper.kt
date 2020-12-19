@@ -1,12 +1,14 @@
 package com.thelumierguy.astroadventures.ui.game.views.levelzero
 
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
 import com.thelumierguy.astroadventures.R
 import com.thelumierguy.astroadventures.data.*
+import com.thelumierguy.astroadventures.data.DataStoreHelper.setHasCompletedTutorial
 import com.thelumierguy.astroadventures.databinding.LevelZeroGameBinding
 import com.thelumierguy.astroadventures.ui.MainActivity
 import com.thelumierguy.astroadventures.ui.ScreenStates
@@ -18,7 +20,6 @@ import com.thelumierguy.astroadventures.ui.game.views.instructions.DialogHelper
 import com.thelumierguy.astroadventures.ui.game.views.playership.LevelZeroCallBackPlayer
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -44,20 +45,24 @@ interface LevelZeroHelper {
                             delay(dialog.duration)
                         }
                         DialogHelper.InstructionType.AMMO -> {
-                            tvBlinking.stopBlinking()
                             dialogView.addDialog(dialog.text)
                             ammoCountView.isVisible = true
                             delay(dialog.duration)
                         }
                         DialogHelper.InstructionType.HEALTH -> {
-                            tvBlinking.stopBlinking()
                             dialogView.addDialog(dialog.text)
                             healthView.isVisible = true
                             delay(dialog.duration)
                         }
+                        DialogHelper.InstructionType.AmmoWarning -> {
+                            dialogHelper.setLock()
+                            dialogView.addDialog(dialog.text)
+                            delay(dialog.duration)
+                            dialogHelper.removeLock()
+                        }
                         DialogHelper.InstructionType.TILT -> {
                             dialogHelper.setLock()
-                            dialogView.alpha = 0F
+                            dialogView.isInvisible = true
                             spaceShipView.levelZeroCallBackPlayer =
                                 object : LevelZeroCallBackPlayer {
                                     override fun onTilted() {
@@ -73,7 +78,7 @@ interface LevelZeroHelper {
                         }
                         DialogHelper.InstructionType.FIRE -> {
                             dialogHelper.setLock()
-                            dialogView.alpha = 0F
+                            dialogView.isInvisible = true
                             tvBlinking.text = dialog.text
                             bulletView.levelZeroCallBackBullet = object : LevelZeroCallBackBullet {
                                 override fun onFired() {
@@ -98,6 +103,7 @@ interface LevelZeroHelper {
                         }
                         DialogHelper.InstructionType.EnemySpotted -> {
                             dialogHelper.setLock()
+                            enemiesView.disableInit = true
                             enemiesView.animate()
                                 .translationYBy((resources.getDimension(R.dimen.enemyTranslateY)))
                                 .setDuration(2000L)
@@ -107,12 +113,13 @@ interface LevelZeroHelper {
                                 }.start()
                         }
                         DialogHelper.InstructionType.EnemyTranslated -> {
+                            dialogHelper.setLock()
                             dialogView.addDialog(dialog.text)
                             initUIComponents(levelZeroGameBinding,
                                 this@showInitialInstructions)
                             scoreView.isVisible = true
                             LevelInfo.hasPlayedTutorial = true
-//                            setHasCompletedTutorial()
+                            setHasCompletedTutorial()
                             TransitionManager.beginDelayedTransition(root)
                             delay(dialog.duration)
                             dialogView.isVisible = false
@@ -126,16 +133,15 @@ interface LevelZeroHelper {
             fun startLoopingThroughDialogs() {
                 dialogJob.cancel()
                 dialogJob = lifecycleScope.launch {
-                    if (isActive)
-                        (dialogHelper.counter..dialogHelper.getItemSize()).forEach { _ ->
-                            handleDialogs()
-                        }
+                    (dialogHelper.counter..dialogHelper.getItemSize()).forEach { _ ->
+                        handleDialogs()
+                    }
                 }
-
             }
 
             dialogView.setOnClickListener {
-                startLoopingThroughDialogs()
+                if (dialogHelper.isOpen)
+                    startLoopingThroughDialogs()
             }
 
             startLoopingThroughDialogs()

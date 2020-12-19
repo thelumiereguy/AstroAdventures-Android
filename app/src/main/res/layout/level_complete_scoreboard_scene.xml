@@ -7,14 +7,14 @@
 
     <TextView
         android:id="@+id/successText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:letterSpacing="0.1"
         android:text="@string/level_complete"
         android:textAlignment="center"
         android:textColor="@color/bulletColor"
-        android:textSize="48sp"
+        android:textSize="32sp"
         app:fontFamily="@font/determination_mono"
         app:layout_constraintBottom_toTopOf="@+id/scoreBoard"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,7 +22,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.69"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintWidth_percent="0.7" />
 
 
     <androidx.constraintlayout.widget.Group

@@ -146,7 +146,9 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         bodyTopPoint = h / 3F
         wingWidth = w / 15F
         missileSize = h / 8F
-        shipYRange = Range(top + streamLinedTopPoint, top + (2 * streamLinedTopPoint))
+        mainBodyYRange = Range(top + streamLinedTopPoint, (top + halfHeight + bodyTopPoint) - missileSize)
+        wingsYRange =
+            Range((top + halfHeight + bodyTopPoint) - missileSize, top + halfHeight + bodyTopPoint)
         initPicture()
     }
 
@@ -296,8 +298,14 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         translationXValue = map(gravityValue[0], 6F, -6F, -wingWidth, measuredWidth + wingWidth)
         if (translationXValue > wingWidth && translationXValue < measuredWidth - wingWidth) {
             currentShipPosition = translationXValue
-            shipXRange = Range(currentShipPosition - wingWidth,
-                currentShipPosition + wingWidth)
+            mainBodyXRange = Range(currentShipPosition - 24,
+                currentShipPosition + 24)
+
+            leftWingsXRange = Range(currentShipPosition - wingWidth, mainBodyXRange.lower)
+
+            rightWingsXRange = Range(mainBodyXRange.upper, currentShipPosition + wingWidth)
+
+
             displayRect.set(
                 (translationXValue - halfWidth).roundToInt(),
                 0,
@@ -319,8 +327,11 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         accelerometerManager?.startListening()
     }
 
-    private var shipXRange = Range(0F, 0F)
-    private var shipYRange = Range(0F, 0F)
+    private var mainBodyXRange = Range(0F, 0F)
+    private var mainBodyYRange = Range(0F, 0F)
+    private var leftWingsXRange = Range(0F, 0F)
+    private var rightWingsXRange = Range(0F, 0F)
+    private var wingsYRange = Range(0F, 0F)
 
 
     override fun checkCollision(
@@ -329,10 +340,19 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         collisionDetector.checkCollision(softBodyObjectData) { softBodyPosition, softBodyObject ->
 
             if (softBodyPosition.y.roundToInt() > top) {
-                if (shipYRange.contains(softBodyPosition.y))
-                    if (shipXRange.contains(softBodyPosition.x)) {
+                if (mainBodyYRange.contains(softBodyPosition.y))
+                    if (mainBodyXRange.contains(softBodyPosition.x)) {
                         onPlayerHit(softBodyObject)
                     }
+
+                if (wingsYRange.contains(softBodyPosition.y))
+                    if (leftWingsXRange.contains(
+                            softBodyPosition.x) || rightWingsXRange.contains(softBodyPosition.x)
+                    ) {
+                        onPlayerHit(softBodyObject)
+                    }
+
+
             }
 
         }
@@ -341,6 +361,7 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
     private fun onPlayerHit(softBodyObject: SoftBodyObjectData) {
         when (softBodyObject.objectType) {
             SoftBodyObjectType.BULLET -> {
+                onHitCallBack()
                 hapticService.performHapticFeedback(64, 48)
                 PlayerHealthInfo.onHit()
             }
@@ -369,6 +390,8 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
         }
 
     private var isCallBackInvoked = true
+
+    var onHitCallBack: () -> Unit = {}
 }
 
 interface LevelZeroCallBackPlayer {

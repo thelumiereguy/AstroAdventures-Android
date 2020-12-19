@@ -16,6 +16,8 @@ class DialogHelper {
             add(Dialog("Good Job. Try conserving your resources as they are hard to come by these days."))
             add(Dialog("At the top-left, you'll find information regarding your Ammunition reserves.",
                 InstructionType.AMMO))
+            add(Dialog("Try conserving your ammo as much as possible. Once it's empty, you cannot refill it and you'll be a sitting duck!",
+                InstructionType.AmmoWarning, duration = 5000L))
             add(Dialog("And at the bottom, you'll find information regarding your Spaceship's health.",
                 InstructionType.HEALTH))
             add(Dialog("Now tap on your screen to fire a missile.", InstructionType.FIRE))
@@ -23,10 +25,10 @@ class DialogHelper {
             add(Dialog("Hold on! There's an incoming transmission."))
             add(Dialog("Mayday! Mayday! Someone just fired a missile and our location has been compromised. \nNow, all of China knows we're here.",
                 duration = 12000L))
-            add(Dialog("There's a fleet of Space Pirates heading your way. Finish them off as soon as possible.",
+            add(Dialog("There's a fleet of Space Pirates heading your way. Finish them off as soon as possible."))
+            add(Dialog("You'll occasionally see an enemy drop a Blue Capsule. Be sure to collect it to gather more ammunition.",
                 InstructionType.EnemySpotted))
-            add(Dialog("You'll occasionally see an enemy drop a Blue Capsule. Be sure to collect it to gather more ammunition."))
-            add(Dialog("Good Luck!", InstructionType.EnemyTranslated))
+            add(Dialog("Good Luck!", InstructionType.EnemyTranslated, duration = 3000L))
         }
     }
 
@@ -61,6 +63,7 @@ class DialogHelper {
         TILT,
         FIRE,
         EnemySpotted,
-        EnemyTranslated
+        EnemyTranslated,
+        AmmoWarning
     }
 }

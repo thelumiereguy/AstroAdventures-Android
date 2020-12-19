@@ -1,7 +1,6 @@
 package com.thelumierguy.astroadventures.ui
 
 import android.media.MediaPlayer
-import android.util.Log
 import android.view.Gravity
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.LinearInterpolator
@@ -21,12 +20,8 @@ import com.thelumierguy.astroadventures.data.Score.scoreFlow
 import com.thelumierguy.astroadventures.databinding.GameSceneBinding
 import com.thelumierguy.astroadventures.ui.game.views.bullets.BulletView
 import com.thelumierguy.astroadventures.utils.*
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.zip
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 
 fun MainActivity.observeScreenStates() {
@@ -111,7 +106,7 @@ fun MainActivity.observeScreenStates() {
                                         if (LevelInfo.hasPlayedTutorial)
                                             viewModel.updateUIState(ScreenStates.StartGame)
                                         else
-                                            viewModel.updateUIState(ScreenStates.StartLevelZero(Job()))
+                                            viewModel.updateUIState(ScreenStates.StartLevelZero)
                                     }
                                 }
                             }
@@ -123,7 +118,9 @@ fun MainActivity.observeScreenStates() {
                             val bulletStore = BulletStore(BulletStore.HALF_REFILL)
                             enemiesView.bulletStore = bulletStore
                             spaceShipView.bulletStore = bulletStore
-
+                            spaceShipView.onHitCallBack = {
+                                containerView.startShakeAnimation(50, 15, 4)
+                            }
                             lifecycleScope.launchWhenCreated {
                                 scoreFlow().collect { score ->
                                     if (isActive) {
@@ -168,7 +165,7 @@ fun MainActivity.observeScreenStates() {
                     }
 
                     is ScreenStates.StartLevelZero -> {
-                        startLevelZero(it.stateJob)
+                        startLevelZero()
                     }
                     is ScreenStates.LevelComplete -> {
                         transitionFromTo(gameScene.scene,
@@ -314,23 +311,23 @@ fun MainActivity.observeScreenStates() {
     }
 }
 
-private fun MainActivity.startLevelZero(stateJob: Job) {
+private fun MainActivity.startLevelZero() {
     resetGameScene()
     levelZeroGameScene.binding.apply {
-        val bulletStore = BulletStore(BulletStore.HALF_REFILL)
+        val bulletStore = BulletStore(BulletStore.FULL_REFILL)
+
         enemiesView.bulletStore = bulletStore
         spaceShipView.bulletStore = bulletStore
-        lifecycleScope.launch(stateJob) {
+
+        lifecycleScope.launch {
             scoreFlow().collect { score ->
-                Log.d("LevelZero score", "$score")
                 scoreView.text =
                     getString(R.string.score_text, score)
             }
         }
 
-        lifecycleScope.launch(stateJob) {
+        lifecycleScope.launch {
             bulletStore.bulletCountFlow().collect { ammoCount ->
-                Log.d("LevelZero bullet", "$ammoCount")
                 ammoCountView.setBulletCount(ammoCount, bulletStore.maxCount)
             }
         }

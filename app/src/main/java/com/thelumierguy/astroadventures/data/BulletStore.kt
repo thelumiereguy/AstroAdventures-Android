@@ -8,6 +8,7 @@ class BulletStore(val maxCount: Float) {
 
     companion object {
         const val HALF_REFILL = 60F
+        const val FULL_REFILL = 120F
 
         fun getAmountScore(amount: Int) = (amount * 35)
     }

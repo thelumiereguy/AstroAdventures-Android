@@ -1,9 +1,7 @@
 package com.thelumierguy.astroadventures.ui.game.views.instructions
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
-import android.view.View
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import androidx.appcompat.widget.AppCompatTextView
@@ -19,15 +17,6 @@ class BlinkingTextView @JvmOverloads constructor(
     defStyle: Int = 0,
 ) : AppCompatTextView(context, attributeSet, defStyle) {
 
-
-
-    init {
-        if (isHardwareAccelerated) {
-            paint.apply {
-                setShadowLayer(8F, 0F, 0F, Color.WHITE)
-            }
-        }
-    }
 
     private val blinkAnimation by lazy {
         AlphaAnimation(0.0f, 1.0f).apply {
