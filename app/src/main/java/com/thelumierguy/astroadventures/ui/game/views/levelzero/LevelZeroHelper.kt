@@ -119,9 +119,9 @@ interface LevelZeroHelper {
                                 this@showInitialInstructions)
                             scoreView.isVisible = true
                             LevelInfo.hasPlayedTutorial = true
-                            setHasCompletedTutorial()
-                            TransitionManager.beginDelayedTransition(root)
+//                            setHasCompletedTutorial()
                             delay(dialog.duration)
+                            TransitionManager.beginDelayedTransition(root)
                             dialogView.isVisible = false
                             enemiesView.startGame()
                             return

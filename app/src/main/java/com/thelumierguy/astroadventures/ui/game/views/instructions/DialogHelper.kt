@@ -13,7 +13,7 @@ class DialogHelper {
             add(Dialog("Greetings Ranger!. It's good to have you back after so long. As you know, our planet's resources are all but depleted."))
             add(Dialog("It is our job to go on this mission to help our world. I assume you remember the workings around here. But let's go over it again, shall we?"))
             add(Dialog("Please tilt your phone to control your ship.", InstructionType.TILT))
-            add(Dialog("Good Job. Try conserving your resources as they are hard to come by these days."))
+            add(Dialog("Good Job. Try conserving your resources as they are hard to come by these days.", duration = 5000L))
             add(Dialog("At the top-left, you'll find information regarding your Ammunition reserves.",
                 InstructionType.AMMO))
             add(Dialog("Try conserving your ammo as much as possible. Once it's empty, you cannot refill it and you'll be a sitting duck!",
@@ -22,10 +22,10 @@ class DialogHelper {
                 InstructionType.HEALTH))
             add(Dialog("Now tap on your screen to fire a missile.", InstructionType.FIRE))
             add(Dialog("Good Job!", duration = 4000L))
-            add(Dialog("Hold on! There's an incoming transmission."))
+            add(Dialog("Hold on! There's an incoming transmission.", duration = 4000L))
             add(Dialog("Mayday! Mayday! Someone just fired a missile and our location has been compromised. \nNow, all of China knows we're here.",
                 duration = 12000L))
-            add(Dialog("There's a fleet of Space Pirates heading your way. Finish them off as soon as possible."))
+            add(Dialog("There's a fleet of Space Pirates heading your way. Finish them off as soon as possible.", duration = 5000L))
             add(Dialog("You'll occasionally see an enemy drop a Blue Capsule. Be sure to collect it to gather more ammunition.",
                 InstructionType.EnemySpotted))
             add(Dialog("Good Luck!", InstructionType.EnemyTranslated, duration = 3000L))

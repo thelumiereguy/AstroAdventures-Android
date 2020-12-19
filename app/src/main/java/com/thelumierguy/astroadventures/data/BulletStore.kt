@@ -13,7 +13,7 @@ class BulletStore(val maxCount: Float) {
         fun getAmountScore(amount: Int) = (amount * 35)
     }
 
-    private val bulletCountFlow = MutableStateFlow(HALF_REFILL.roundToInt())
+    private val bulletCountFlow = MutableStateFlow(maxCount.roundToInt())
 
     fun bulletCountFlow(): StateFlow<Int> = bulletCountFlow
 

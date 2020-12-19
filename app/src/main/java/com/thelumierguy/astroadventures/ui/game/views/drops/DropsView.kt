@@ -2,7 +2,6 @@ package com.thelumierguy.astroadventures.ui.game.views.drops
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
@@ -124,7 +123,9 @@ class DropsView(context: Context, attributeSet: AttributeSet? = null) :
         }
 
         private val midCirclePaint = Paint().apply {
-            color = Color.RED
+            color = ResourcesCompat.getColor(context.resources,
+                R.color.primaryFontColor,
+                null)
             isAntiAlias = false
             isDither = false
         }

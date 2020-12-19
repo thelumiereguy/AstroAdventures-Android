@@ -10,6 +10,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.thelumierguy.astroadventures.R
 import com.thelumierguy.astroadventures.data.GlobalCounter
 import com.thelumierguy.astroadventures.utils.CustomLifeCycleOwner
+import com.thelumierguy.astroadventures.utils.forEachSafe
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -69,10 +70,8 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
     }
 
     private fun resetTrails() {
-        if(!enableWarp){
-            val trailsIterator = trailsList.iterator()
-            while (trailsIterator.hasNext()) {
-                val trails = trailsIterator.next()
+        if (!enableWarp) {
+            trailsList.forEachSafe { trails, iterator ->
                 trails.reset()
             }
         }
@@ -81,17 +80,12 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
     private fun startObservingTimer() {
         GlobalCounter.starsBackgroundTimerFlow.onEach {
             if (enableWarp) {
-                val trailsIterator = trailsList.iterator()
-                while (trailsIterator.hasNext()) {
-                    val trails = trailsIterator.next()
+                trailsList.forEachSafe { trails, iterator ->
                     trails.translate()
                 }
-
             } else {
-                val starIterator = starsList.iterator()
-                while (starIterator.hasNext()) {
-                    val star = starIterator.next()
-                    star.translate()
+                starsList.forEachSafe { stars, iterator ->
+                    stars.translate()
                 }
             }
             invalidate()

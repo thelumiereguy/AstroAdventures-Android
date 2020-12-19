@@ -111,7 +111,7 @@
         android:letterSpacing="0.1"
         android:padding="8dp"
         android:textAlignment="center"
-        android:textColor="@color/shipHighLightColor"
+        android:textColor="@color/white"
         android:textSize="24sp"
         android:visibility="invisible"
         app:fontFamily="@font/determination_mono"
