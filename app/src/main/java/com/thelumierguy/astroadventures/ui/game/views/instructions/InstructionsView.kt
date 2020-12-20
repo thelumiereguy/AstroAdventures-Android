@@ -2,10 +2,7 @@ package com.thelumierguy.astroadventures.ui.game.views.instructions
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.RectF
+import android.graphics.*
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
@@ -31,10 +28,21 @@ class InstructionsView @JvmOverloads constructor(
         setOnTouchListener(CustomOnTouchListenerImpl(-0.2F))
     }
 
+    private val borderThickness = 10F
+
     private val chatBubblePaint = Paint().apply {
         color = ResourcesCompat.getColor(context.resources,
             R.color.primaryFontColor,
             null)
+        isAntiAlias = false
+        isDither = false
+    }
+
+    private val borderPaint = Paint().apply {
+        color = Color.BLACK
+        style = Paint.Style.STROKE
+        strokeWidth = borderThickness
+        strokeJoin = Paint.Join.BEVEL
         isAntiAlias = false
         isDither = false
     }
@@ -52,9 +60,9 @@ class InstructionsView @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
         bubbleArrowEndOffset = w * 0.1F
         bubbleArrowY = measuredHeight.toFloat() - paddingBottom.toFloat()
-        chatBubbleRect.set(0F,
-            0F,
-            measuredWidth.toFloat() - 0F,
+        chatBubbleRect.set(borderThickness,
+            borderThickness,
+            measuredWidth.toFloat() - borderThickness,
             bubbleArrowY
         )
     }
@@ -87,11 +95,29 @@ class InstructionsView @JvmOverloads constructor(
         canvas?.drawPath(
             bubbleArrowPath,
             chatBubblePaint)
-        canvas?.drawRoundRect(chatBubbleRect,
-            measuredHeight * 0.2F,
-            measuredHeight * 0.2F,
+        canvas?.drawRect(chatBubbleRect,
             chatBubblePaint)
+        drawBorder()
+        canvas?.drawPath(
+            bubbleArrowPath,
+            borderPaint)
         super.onDraw(canvas)
+    }
+
+
+    private fun drawBorder() {
+        bubbleArrowPath.reset()
+        bubbleArrowPath.apply {
+            moveTo(0F, 0F)
+            lineTo(0F, bubbleArrowY)
+            lineTo(measuredWidth - paddingBottom - bubbleArrowEndOffset, bubbleArrowY)
+            lineTo(measuredWidth - bubbleArrowEndOffset,
+                measuredHeight.toFloat())
+            lineTo(measuredWidth - bubbleArrowEndOffset, bubbleArrowY)
+            lineTo(measuredWidth.toFloat(), bubbleArrowY)
+            lineTo(measuredWidth.toFloat(), 0F)
+            close()
+        }
     }
 
     private fun drawBubbleArrow() {
