@@ -13,8 +13,6 @@ import com.thelumierguy.astroadventures.data.SoftBodyObjectType
 import com.thelumierguy.astroadventures.ui.base.BaseCustomView
 import com.thelumierguy.astroadventures.ui.game.views.bullets.BulletView
 import com.thelumierguy.astroadventures.ui.game.views.bullets.SoftBodyCoordinates
-import com.thelumierguy.astroadventures.utils.PLAYER_BULLET_SOUND
-import com.thelumierguy.astroadventures.utils.SoundData
 import com.thelumierguy.astroadventures.utils.SoundManager
 import java.util.*
 import kotlin.random.Random
@@ -22,14 +20,11 @@ import kotlin.random.Random
 class DropsView(context: Context, attributeSet: AttributeSet? = null) :
     BaseCustomView(context, attributeSet) {
 
-    private val fireSoundManager by lazy {
-        SoundManager(
-            context,
-            SoundData(R.raw.player_bullet_sound,
-                PLAYER_BULLET_SOUND
-            )
-        )
+    private var fireSoundManager: SoundManager? = null
 
+    fun setSoundManager(soundManager: SoundManager) {
+        fireSoundManager = soundManager
+        fireSoundManager?.init()
     }
 
     var softBodyObjectTracker: SoftBodyObject.SoftBodyObjectTracker? = null
@@ -40,16 +35,16 @@ class DropsView(context: Context, attributeSet: AttributeSet? = null) :
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         if (!isInEditMode)
-            fireSoundManager.init()
+            fireSoundManager?.init()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        fireSoundManager.release()
+        fireSoundManager?.release()
     }
 
     fun dropGift(x: Float, y: Float) {
-        fireSoundManager.play(PLAYER_BULLET_SOUND)
+        fireSoundManager?.play()
         ammoDropsList.add(AmmoDrop(bulletX = x,
             shipY = y,
             maxHeight = measuredHeight,
@@ -112,7 +107,7 @@ class DropsView(context: Context, attributeSet: AttributeSet? = null) :
 
         private val ammoDropPaint = Paint().apply {
             color = ResourcesCompat.getColor(context.resources,
-                R.color.shipHighLightColor,
+                R.color.primaryFontColor,
                 null)
             isAntiAlias = false
             strokeWidth = 5F
@@ -124,7 +119,7 @@ class DropsView(context: Context, attributeSet: AttributeSet? = null) :
 
         private val midCirclePaint = Paint().apply {
             color = ResourcesCompat.getColor(context.resources,
-                R.color.primaryFontColor,
+                R.color.shipHighLightColor,
                 null)
             isAntiAlias = false
             isDither = false

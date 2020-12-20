@@ -18,6 +18,9 @@ import com.thelumierguy.astroadventures.ui.game.views.enemyShip.EnemyDetailsCall
 import com.thelumierguy.astroadventures.ui.game.views.enemyShip.OnCollisionCallBack
 import com.thelumierguy.astroadventures.ui.game.views.instructions.DialogHelper
 import com.thelumierguy.astroadventures.ui.game.views.playership.LevelZeroCallBackPlayer
+import com.thelumierguy.astroadventures.utils.PLAYER_BULLET_SOUND
+import com.thelumierguy.astroadventures.utils.SoundData
+import com.thelumierguy.astroadventures.utils.SoundManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,6 +35,18 @@ interface LevelZeroHelper {
         var dialogJob: Job = Job()
 
         levelZeroGameBinding.apply {
+
+            val itemSoundManger = SoundManager(
+                applicationContext,
+                SoundData(R.raw.player_bullet_sound,
+                    PLAYER_BULLET_SOUND
+                ),
+                lifecycle
+            )
+
+            dropsView.setSoundManager(itemSoundManger)
+            bulletView.setSoundManager(itemSoundManger)
+
             val dialogHelper = DialogHelper()
 
             suspend fun LevelZeroGameBinding.handleDialogs() {
@@ -119,7 +134,7 @@ interface LevelZeroHelper {
                                 this@showInitialInstructions)
                             scoreView.isVisible = true
                             LevelInfo.hasPlayedTutorial = true
-//                            setHasCompletedTutorial()
+                            setHasCompletedTutorial()
                             delay(dialog.duration)
                             TransitionManager.beginDelayedTransition(root)
                             dialogView.isVisible = false

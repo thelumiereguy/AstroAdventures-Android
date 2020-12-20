@@ -26,7 +26,7 @@ class DialogHelper {
             add(Dialog("Mayday! Mayday! Someone just fired a missile and our location has been compromised. \nNow, all of China knows we're here.",
                 duration = 12000L))
             add(Dialog("There's a fleet of Space Pirates heading your way. Finish them off as soon as possible.", duration = 5000L))
-            add(Dialog("You'll occasionally see an enemy drop a Blue Capsule. Be sure to collect it to gather more ammunition.",
+            add(Dialog("You'll occasionally see an enemy drop a Yellow Capsule. Be sure to collect it to gather more ammunition.",
                 InstructionType.EnemySpotted))
             add(Dialog("Good Luck!", InstructionType.EnemyTranslated, duration = 3000L))
         }

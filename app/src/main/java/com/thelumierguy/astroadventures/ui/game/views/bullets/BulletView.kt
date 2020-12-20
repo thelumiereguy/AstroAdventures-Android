@@ -10,20 +10,19 @@ import com.thelumierguy.astroadventures.R
 import com.thelumierguy.astroadventures.data.SoftBodyObject
 import com.thelumierguy.astroadventures.data.SoftBodyObjectType
 import com.thelumierguy.astroadventures.ui.base.BaseCustomView
-import com.thelumierguy.astroadventures.utils.*
+import com.thelumierguy.astroadventures.utils.SoundManager
+import com.thelumierguy.astroadventures.utils.forEachMutableSafe
+import com.thelumierguy.astroadventures.utils.forEachSafe
 import java.util.*
 
 class BulletView(context: Context, attributeSet: AttributeSet? = null) :
     BaseCustomView(context, attributeSet) {
 
-    private val fireSoundManager by lazy {
-        SoundManager(
-            context,
-            SoundData(R.raw.player_bullet_sound,
-                PLAYER_BULLET_SOUND
-            )
-        )
+    private var fireSoundManager: SoundManager? = null
 
+    fun setSoundManager(soundManager: SoundManager) {
+        fireSoundManager = soundManager
+        fireSoundManager?.init()
     }
 
     var softBodyObjectTracker: SoftBodyObject.SoftBodyObjectTracker? = null
@@ -35,23 +34,12 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
 
     override fun hasOverlappingRendering(): Boolean = false
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (!isInEditMode)
-            fireSoundManager.init()
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        fireSoundManager.release()
-    }
-
     fun fire(x: Float, y: Float, sender: Sender) {
         if (!isCallBackInvoked) {
             levelZeroCallBackBullet?.onFired()
         }
         isCallBackInvoked = true
-        fireSoundManager.play(PLAYER_BULLET_SOUND)
+        fireSoundManager?.play()
         if (sender == Sender.PLAYER) {
             bulletStateList.add(Bullet(x,
                 measuredHeight - y,
@@ -135,10 +123,9 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
                 Color.RED
             }
             isAntiAlias = false
-            strokeWidth = 8F
+            strokeWidth = 12F
             style = Paint.Style.STROKE
             strokeCap = Paint.Cap.ROUND
-            strokeWidth = 4F
             isDither = false
         }
 

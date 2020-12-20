@@ -26,7 +26,7 @@
             android:padding="24dp"
             android:text="@string/app_name"
             android:textColor="@color/secondaryFontColor"
-            android:textSize="32sp"
+            android:textSize="@dimen/menu_logo_text_size"
             android:textStyle="italic|bold"
             app:fontFamily="@font/determination_mono" />
 

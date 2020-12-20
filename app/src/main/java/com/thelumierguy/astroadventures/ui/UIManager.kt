@@ -115,7 +115,7 @@ fun MainActivity.observeScreenStates() {
                     is ScreenStates.StartGame -> {
                         resetGameScene()
                         gameScene.binding.apply {
-                            val bulletStore = BulletStore(BulletStore.HALF_REFILL)
+                            val bulletStore = BulletStore(BulletStore.REFILL)
                             enemiesView.bulletStore = bulletStore
                             spaceShipView.bulletStore = bulletStore
                             spaceShipView.onHitCallBack = {
@@ -149,6 +149,18 @@ fun MainActivity.observeScreenStates() {
                                 }
                                 onEnd {
                                     startGame(gameScene.binding)
+
+                                    val itemSoundManger = SoundManager(
+                                        applicationContext,
+                                        SoundData(R.raw.player_bullet_sound,
+                                            PLAYER_BULLET_SOUND
+                                        ),
+                                        lifecycle
+                                    )
+
+                                    dropsView.setSoundManager(itemSoundManger)
+                                    bulletView.setSoundManager(itemSoundManger)
+
                                     bulletView.setOnClickListener {
                                         if (bulletStore.getAmmoCount() != 0) {
                                             bulletStore.updateInventory()
@@ -314,7 +326,7 @@ fun MainActivity.observeScreenStates() {
 private fun MainActivity.startLevelZero() {
     resetGameScene()
     levelZeroGameScene.binding.apply {
-        val bulletStore = BulletStore(BulletStore.FULL_REFILL)
+        val bulletStore = BulletStore(BulletStore.REFILL)
 
         enemiesView.bulletStore = bulletStore
         spaceShipView.bulletStore = bulletStore

@@ -7,8 +7,7 @@ import kotlin.math.roundToInt
 class BulletStore(val maxCount: Float) {
 
     companion object {
-        const val HALF_REFILL = 60F
-        const val FULL_REFILL = 120F
+        const val REFILL = 80F
 
         fun getAmountScore(amount: Int) = (amount * 35)
     }

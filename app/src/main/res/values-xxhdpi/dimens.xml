@@ -2,4 +2,6 @@
 <resources>
     <dimen name="enemyTranslateNegativeY">-400dp</dimen>
     <dimen name="enemyTranslateY">400dp</dimen>
+    <dimen name="menu_logo_text_size">29sp</dimen>
+    <dimen name="text_44_size">41sp</dimen>
 </resources>
