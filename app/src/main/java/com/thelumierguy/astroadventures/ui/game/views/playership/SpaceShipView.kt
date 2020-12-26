@@ -368,6 +368,7 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
             is SoftBodyObjectType.DROP -> {
                 when (softBodyObject.objectType.dropType) {
                     is DropType.Ammo -> {
+                        onAmmoCollectedCallback.invoke()
                         hapticService.performHapticFeedback(128, 48)
                         if (::bulletStore.isInitialized)
                             bulletStore.addAmmo(softBodyObject.objectType.dropType.ammoCount)
@@ -392,6 +393,8 @@ class SpaceShipView(context: Context, attributeSet: AttributeSet? = null) :
     private var isCallBackInvoked = true
 
     var onHitCallBack: () -> Unit = {}
+
+    var onAmmoCollectedCallback: () -> Unit = {}
 }
 
 interface LevelZeroCallBackPlayer {

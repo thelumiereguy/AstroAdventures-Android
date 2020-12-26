@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import com.thelumierguy.astroadventures.R
+import com.thelumierguy.astroadventures.utils.scaleView
 
 
 class BulletCountView @JvmOverloads constructor(
@@ -20,6 +21,10 @@ class BulletCountView @JvmOverloads constructor(
         } else {
             setTextColor(Color.WHITE)
         }
+    }
+
+    fun onBulletCollected() {
+        scaleView(0.1F)
     }
 
 }

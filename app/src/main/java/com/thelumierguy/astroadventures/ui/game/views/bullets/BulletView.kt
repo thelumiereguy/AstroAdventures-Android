@@ -123,7 +123,7 @@ class BulletView(context: Context, attributeSet: AttributeSet? = null) :
                 Color.RED
             }
             isAntiAlias = false
-            strokeWidth = 12F
+            strokeWidth = 8F
             style = Paint.Style.STROKE
             strokeCap = Paint.Cap.ROUND
             isDither = false

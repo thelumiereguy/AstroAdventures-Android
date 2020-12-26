@@ -3,18 +3,16 @@ package com.thelumierguy.astroadventures.ui.game.views.instructions
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
-import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.LinearInterpolator
-import android.view.animation.OvershootInterpolator
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import com.thelumierguy.astroadventures.R
+import com.thelumierguy.astroadventures.utils.scaleView
+import com.thelumierguy.astroadventures.utils.scaleToOriginal
 
 
 class InstructionsView @JvmOverloads constructor(
@@ -141,38 +139,15 @@ class CustomOnTouchListenerImpl constructor(private val scaleByVal: Float) : Vie
     override fun onTouch(v: View, event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                scaleDown(v)
-                Handler(Looper.getMainLooper()).postDelayed({
-                    scaleToOriginal(v)
-                }, 200)
+                v.scaleView(scaleByVal)
                 return true
             }
             MotionEvent.ACTION_UP -> {
-                scaleToOriginal(v)
+                v.scaleToOriginal()
                 v.performClick()
                 return true
             }
         }
         return false
-    }
-
-    private fun scaleDown(view: View) {
-        view.animate()
-            .scaleXBy(scaleByVal)
-            .scaleYBy(scaleByVal)
-            .setDuration(100)
-            .setInterpolator(LinearInterpolator())
-            .start()
-    }
-
-    private fun scaleToOriginal(view: View) {
-        view.animate().cancel()
-        view.animate()
-            .scaleX(1f)
-            .scaleY(1f)
-            .setDuration(500)
-            .setInterpolator(OvershootInterpolator())
-            .start()
-
     }
 }

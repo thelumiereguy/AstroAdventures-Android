@@ -119,7 +119,10 @@ fun MainActivity.observeScreenStates() {
                             enemiesView.bulletStore = bulletStore
                             spaceShipView.bulletStore = bulletStore
                             spaceShipView.onHitCallBack = {
-                                containerView.startShakeAnimation(50, 15, 4)
+                                containerView.startShakeAnimation(50, 10, 4)
+                            }
+                            spaceShipView.onAmmoCollectedCallback = {
+                                ammoCountView.onBulletCollected()
                             }
                             lifecycleScope.launchWhenCreated {
                                 scoreFlow().collect { score ->
