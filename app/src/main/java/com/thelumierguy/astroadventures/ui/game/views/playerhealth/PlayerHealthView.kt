@@ -21,8 +21,10 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 
-class PlayerHealthView constructor(context: Context, attributeSet: AttributeSet? = null) :
-    BaseCustomView(context, attributeSet) {
+class PlayerHealthView constructor(
+    context: Context,
+    attributeSet: AttributeSet? = null,
+) : BaseCustomView(context, attributeSet) {
 
     private val heartPaint by lazy {
         Paint().apply {
@@ -73,7 +75,7 @@ class PlayerHealthView constructor(context: Context, attributeSet: AttributeSet?
 
 
     private fun startObservingHealth() {
-        lifeCycleOwner.customViewLifeCycleScope.launch {
+        lifeCycleOwner.customViewLifeCycleScope.launchWhenCreated {
             PlayerHealthInfo.getPlayerHealthFlow().collect { life ->
                 launch {
                     if (life <= 0) {

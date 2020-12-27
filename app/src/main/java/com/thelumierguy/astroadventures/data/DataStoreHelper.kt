@@ -8,7 +8,7 @@ import androidx.datastore.preferences.core.preferencesKey
 import androidx.datastore.preferences.createDataStore
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
@@ -28,9 +28,7 @@ object DataStoreHelper {
         )
 
         activity.lifecycleScope.launchWhenCreated {
-            getHasCompletedTutorial()?.collect {
-                LevelInfo.hasPlayedTutorial = it
-            }
+            LevelInfo.hasPlayedTutorial = getHasCompletedTutorial()
         }
     }
 
@@ -40,10 +38,8 @@ object DataStoreHelper {
         }
     }
 
-    private fun getHasCompletedTutorial(): Flow<Boolean> {
-        return dataStore?.data?.map { preference ->
-            preference[HAS_COMPLETED_LEVEL_ZERO] ?: false
-        } ?: flowOf(false)
+    private suspend fun getHasCompletedTutorial(): Boolean {
+        return dataStore?.data?.first()?.get(HAS_COMPLETED_LEVEL_ZERO) ?: false
     }
 
 

@@ -1,4 +1,4 @@
-package com.thelumierguy.astroadventures.ui.base
+package com.thelumierguy.astroadventures.ui.menu.views.scoreview
 
 import android.animation.Animator
 import android.animation.ValueAnimator

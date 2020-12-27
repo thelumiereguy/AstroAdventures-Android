@@ -120,7 +120,7 @@
                 tools:text="200" />
 
 
-            <com.thelumierguy.astroadventures.ui.base.AnimatedTextView
+            <com.thelumierguy.astroadventures.ui.menu.views.scoreview.AnimatedTextView
                 android:id="@+id/bulletCountValueView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
                 tools:text="200" />
 
 
-            <com.thelumierguy.astroadventures.ui.base.AnimatedTextView
+            <com.thelumierguy.astroadventures.ui.menu.views.scoreview.AnimatedTextView
                 android:id="@+id/totalScoreValueView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

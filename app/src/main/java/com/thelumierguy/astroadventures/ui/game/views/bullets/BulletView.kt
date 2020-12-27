@@ -5,18 +5,18 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import com.thelumierguy.astroadventures.R
 import com.thelumierguy.astroadventures.data.SoftBodyObject
 import com.thelumierguy.astroadventures.data.SoftBodyObjectType
-import com.thelumierguy.astroadventures.ui.base.BaseCustomView
 import com.thelumierguy.astroadventures.utils.SoundManager
 import com.thelumierguy.astroadventures.utils.forEachMutableSafe
 import com.thelumierguy.astroadventures.utils.forEachSafe
 import java.util.*
 
 class BulletView(context: Context, attributeSet: AttributeSet? = null) :
-    BaseCustomView(context, attributeSet) {
+    View(context, attributeSet) {
 
     private var fireSoundManager: SoundManager? = null
 

@@ -25,4 +25,6 @@ class CustomLifeCycleOwner : LifecycleOwner {
     init {
         mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
     }
+
+
 }

@@ -5,11 +5,10 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.widget.FrameLayout
 import androidx.core.content.res.ResourcesCompat
 import com.thelumierguy.astroadventures.R
 import com.thelumierguy.astroadventures.data.GlobalCounter
-import com.thelumierguy.astroadventures.utils.CustomLifeCycleOwner
+import com.thelumierguy.astroadventures.ui.base.BaseFrameLayout
 import com.thelumierguy.astroadventures.utils.forEachSafe
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -18,11 +17,9 @@ import kotlin.random.Random
 
 
 class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) :
-    FrameLayout(context, attributeSet) {
+    BaseFrameLayout(context, attributeSet) {
 
     private var enableWarp: Boolean = false
-
-    private val lifeCycleOwner by lazy { CustomLifeCycleOwner() }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -79,16 +76,18 @@ class StarsBackgroundView(context: Context, attributeSet: AttributeSet? = null) 
 
     private fun startObservingTimer() {
         GlobalCounter.starsBackgroundTimerFlow.onEach {
-            if (enableWarp) {
-                trailsList.forEachSafe { trails, iterator ->
-                    trails.translate()
+            executeIfActive {
+                if (enableWarp) {
+                    trailsList.forEachSafe { trails, iterator ->
+                        trails.translate()
+                    }
+                } else {
+                    starsList.forEachSafe { stars, iterator ->
+                        stars.translate()
+                    }
                 }
-            } else {
-                starsList.forEachSafe { stars, iterator ->
-                    stars.translate()
-                }
+                invalidate()
             }
-            invalidate()
         }.launchIn(lifeCycleOwner.customViewLifeCycleScope)
     }
 

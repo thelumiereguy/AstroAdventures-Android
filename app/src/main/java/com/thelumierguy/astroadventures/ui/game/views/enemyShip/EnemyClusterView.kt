@@ -12,7 +12,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -97,15 +96,17 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
      */
     private fun startTranslating() {
         translateJob.cancel()
-        translateJob = lifeCycleOwner.customViewLifeCycleScope.launch {
+        translateJob = lifeCycleOwner.customViewLifeCycleScope.launchWhenCreated {
             enemyTimerFlow.collect {
-                enemyList.checkIfYReached(measuredHeight) { hasReachedMax ->
-                    if (hasReachedMax) {
-                        resetEnemies()
-                    }
-                    if (enemyList.isNotEmpty()) {
-                        translateEnemy(System.currentTimeMillis())
-                        invalidate()
+                executeIfActive {
+                    enemyList.checkIfYReached(measuredHeight) { hasReachedMax ->
+                        if (hasReachedMax) {
+                            resetEnemies()
+                        }
+                        if (enemyList.isNotEmpty()) {
+                            translateEnemy(System.currentTimeMillis())
+                            invalidate()
+                        }
                     }
                 }
             }
@@ -116,13 +117,15 @@ class EnemyClusterView(context: Context, attributeSet: AttributeSet? = null) :
     private fun fireCanon() {
         if (shouldEmitObjects()) {
             firingJob.cancel()
-            firingJob = lifeCycleOwner.customViewLifeCycleScope.launch {
+            firingJob = lifeCycleOwner.customViewLifeCycleScope.launchWhenCreated {
                 ticker(1000, 200).receiveAsFlow().collect {
-                    if (enemyList.isNotEmpty()) {
-                        val enemyList = enemyList.random()
-                        val enemy = enemyList.enemyList.findLast { it.isVisible }
-                        enemy?.let {
-                            enemyDetailsCallback?.onCanonReady(enemy.enemyX, enemy.enemyY)
+                    executeIfActive {
+                        if (enemyList.isNotEmpty()) {
+                            val enemyList = enemyList.random()
+                            val enemy = enemyList.enemyList.findLast { it.isVisible }
+                            enemy?.let {
+                                enemyDetailsCallback?.onCanonReady(enemy.enemyX, enemy.enemyY)
+                            }
                         }
                     }
                 }

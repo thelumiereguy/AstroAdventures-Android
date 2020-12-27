@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import com.thelumierguy.astroadventures.R
 import com.thelumierguy.astroadventures.data.DropType
@@ -18,7 +19,7 @@ import java.util.*
 import kotlin.random.Random
 
 class DropsView(context: Context, attributeSet: AttributeSet? = null) :
-    BaseCustomView(context, attributeSet) {
+    View(context, attributeSet) {
 
     private var fireSoundManager: SoundManager? = null
 
